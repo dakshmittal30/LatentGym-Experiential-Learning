@@ -13,10 +13,12 @@ Plain HTML/CSS/JS — no build step, no framework. Pages:
 | Metrics & glossary (interactive explore/exploit explainer) | `metrics.html` |
 | Resources / code & data | `resources.html` |
 
-## 1. Generate the data and figures (one time)
+## 1. Data is included — just clone and serve
 
-The interactive explorer and leaderboard read from `data/`, produced by two scripts that
-read the recorded trajectories and paper figures from the benchmark repo:
+The full trajectory data (`data/trajectories/`, ~186 MB), `data/index.json`, and the figures
+are committed, so a fresh clone runs as-is — no regeneration needed.
+
+To rebuild the data from the source benchmark (only if it changes):
 
 ```bash
 python3 scripts/build_data.py      # -> data/index.json + data/trajectories/**.json (~186 MB)
@@ -48,5 +50,5 @@ It's fully static — upload the folder anywhere:
 - **S3 + CloudFront:** `aws s3 sync . s3://<bucket> --exclude ".git/*"` (enable static hosting; gzip is recommended for `data/index.json` and the JSON files).
 - **nginx / any host:** copy the folder to the web root.
 
-`data/trajectories/` is git-ignored (regenerable, ~186 MB); `data/index.json` is committed.
-Make sure to upload `data/` to your host even though the trajectories aren't in git.
+The whole site, including `data/` (~186 MB), is in the repo, so deploying is just copying
+the folder. (`git clone` then upload, or `aws s3 sync . s3://<bucket> --exclude ".git/*"`.)

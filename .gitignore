@@ -1,11 +1,6 @@
-# Generated trajectory data (regenerable via scripts/build_data.py).
-# The heavy per-trajectory JSON is NOT committed; index.json IS committed.
-data/trajectories/
-
-# Exported figures are regenerable via scripts/export_figures.py, but we keep
-# them committed so the site renders without the source repo. Comment the next
-# line out if you prefer to commit images.
-# assets/img/
+# The full trajectory data (data/trajectories/, ~186 MB) and figures are
+# committed so anyone cloning the repo can run the site directly.
+# Regenerate them with scripts/build_data.py and scripts/export_figures.py.
 
 # OS / editor cruft
 .DS_Store
