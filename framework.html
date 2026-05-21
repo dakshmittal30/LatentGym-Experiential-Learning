@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework — Cross-Task Adaptation</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="framework">
+<div id="nav-root"></div>
+
+<section class="hero" style="padding-bottom:8px">
+  <div class="wrap narrow">
+    <div class="section-tag">The framework</div>
+    <h1>Cross-task adaptation, made studyable</h1>
+    <p class="lede">Every environment is built around an explicit, controllable <b>latent</b>. Because
+      the shared structure is known to the evaluator, we can isolate exactly where an agent succeeds or fails.</p>
+  </div>
+</section>
+
+<!-- meta-RL formalism -->
+<section>
+  <div class="wrap narrow">
+    <h2>Adaptation as meta-RL</h2>
+    <p>An agent faces a sequence of <em>N</em> related tasks
+      <span class="eq">&tau;<sub>1</sub><sup>z</sup>, &tau;<sub>2</sub><sup>z</sup>, …, &tau;<sub>N</sub><sup>z</sup></span>
+      drawn from a distribution <span class="eq">p(&tau; | z)</span> conditioned on a latent
+      <span class="eq">z &sim; p(z)</span>. The latent is the recurring structure the agent should
+      acquire from experience — common knowledge, recurring patterns, reusable strategies. The agent
+      never observes <span class="eq">z</span> directly; it must infer it from interaction.</p>
+    <p>Crucially, the policy parameters stay fixed across the sequence. Adaptation happens
+      <b>in-context</b>: the agent's behavior on task <span class="eq">&tau;<sub>i</sub><sup>z</sup></span>
+      depends on the history it carries forward from earlier tasks.</p>
+    <div class="formula">
+      a<sub>t</sub> &sim; &pi;<sub>&phi;</sub>( a<sub>t</sub> | s<sub>t</sub>, h<sub>&lt;i</sub>, h<sub>i</sub><sup>&lt;t</sup> )
+      &nbsp;&nbsp;&nbsp; with meta-objective &nbsp;&nbsp;
+      <em>J</em>(&phi;) = 𝔼<sub>z</sub> 𝔼<sub>&tau;<sub>1:N</sub></sub> [ &Phi;(G<sub>1</sub>, …, G<sub>N</sub>) ]
+    </div>
+    <p>Here <span class="eq">h<sub>&lt;i</sub></span> is everything seen on tasks
+      <span class="eq">1…i&minus;1</span> (including inter-task feedback), and
+      <span class="eq">&Phi;</span> chooses what aspect of adaptation we reward — e.g. cumulative
+      return <span class="eq">&Sigma;<sub>i</sub> G<sub>i</sub></span>, final return
+      <span class="eq">G<sub>N</sub></span>, or improvement <span class="eq">G<sub>N</sub> &minus; G<sub>1</sub></span>.
+      This induces an <b>exploration–exploitation trade-off across tasks</b>: information-seeking on
+      early tasks is costly now but pays off on every later task.</p>
+    <p class="small"><a href="metrics.html">See the Metrics page for the formal definitions →</a></p>
+  </div>
+</section>
+
+<!-- design axes -->
+<section style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <h2>Each environment factorizes along five axes</h2>
+    <p class="muted narrow">The latent is the central design choice. Around it, four further axes let
+      us control difficulty and support independently.</p>
+    <div class="cards c3" style="margin-top:18px">
+      <div class="card"><div class="ico">🧬</div><h3>Latent structure</h3>
+        <p class="muted">The hidden regularity shared across tasks (e.g. a restricted target set, a best arm, a threshold). The object of adaptation.</p></div>
+      <div class="card"><div class="ico">⚙️</div><h3>Core dynamics</h3>
+        <p class="muted">The within-task decision problem — what the agent does each turn in isolation.</p></div>
+      <div class="card"><div class="ico">🎲</div><h3>Task-specific variation</h3>
+        <p class="muted">Instance-level differences across tasks (the particular goal, dynamics, or initial state).</p></div>
+      <div class="card"><div class="ico">💬</div><h3>Prompt behavior</h3>
+        <p class="muted">How much information about the latent is revealed up front — sets the agent's prior.</p></div>
+      <div class="card"><div class="ico">📨</div><h3>Feedback type</h3>
+        <p class="muted">What signal is added to the cross-task history after each task — governs how fast evidence accumulates.</p></div>
+      <div class="card"><div class="ico">⏳</div><h3>Horizon <em>N</em></h3>
+        <p class="muted">How many tasks are available for adaptation.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- prompt conditions -->
+<section>
+  <div class="wrap narrow">
+    <h2>Prompt conditions</h2>
+    <p>The prompt sets how much the agent knows before it interacts. Every environment supports three.</p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th>Prompt</th><th style="text-align:left">Information revealed</th><th style="text-align:left">What it tests</th></tr></thead>
+        <tbody>
+          <tr><td><code>no_info</code></td><td style="text-align:left">No indication tasks share any latent structure.</td><td style="text-align:left">Does the agent discover structure from experience alone?</td></tr>
+          <tr><td><code>some_info</code></td><td style="text-align:left">A vague hint that some recurring structure may exist.</td><td style="text-align:left">Does it identify the cross-task regularity efficiently?</td></tr>
+          <tr><td><code>full_info</code></td><td style="text-align:left">An explicit description of the latent.</td><td style="text-align:left">Can it use latent information once given?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- feedback -->
+<section>
+  <div class="wrap narrow">
+    <h2>Feedback conditions</h2>
+    <div class="cards c2">
+      <div class="card"><h3><code>standard</code></h3><p class="muted">Only a binary success/failure signal after each task — the realistic, sparse case.</p></div>
+      <div class="card"><h3><code>information</code></h3><p class="muted">The ground-truth outcome is revealed regardless of success, so evidence about the latent accumulates faster.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- difficulty axes -->
+<section style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap narrow">
+    <h2>Three orthogonal difficulty axes</h2>
+    <p class="muted">Prompt and feedback modulate difficulty; the axes below set how hard inference and exploitation actually are. Example settings shown for Number Guessing.</p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th style="text-align:left">Difficulty axis</th><th style="text-align:left">Set by</th><th style="text-align:left">Example settings</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left"><b>Within-task</b></td><td style="text-align:left">Visible range</td><td style="text-align:left">[1,100], [1,1000], [1,10000]</td></tr>
+          <tr><td style="text-align:left"><b>Latent-identification</b></td><td style="text-align:left">Size of hidden set <em>z</em></td><td style="text-align:left">|z|=2, |z|=5, |z|=10</td></tr>
+          <tr><td style="text-align:left"><b>Cross-task</b></td><td style="text-align:left">Latent + within-task</td><td style="text-align:left">|z|=2 in [1,1000] vs. |z|=10 in [1,100]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">A small <em>|z|</em> relative to the visible range makes the latent highly
+      predictive; a <em>|z|</em> comparable to the range makes it nearly uninformative.</p>
+  </div>
+</section>
+
+<!-- explore/exploit teaser -->
+<section>
+  <div class="wrap narrow">
+    <h2>Measuring <em>how</em> agents adapt</h2>
+    <p>Two agents with the same cumulative return can adapt very differently — one probing the latent,
+      the other exploiting what it already knows. We decompose adaptation into two surrogate quantities
+      and measure each with an <b>agent-switching experiment</b>: one agent explores tasks
+      <span class="eq">1…K</span> and builds the history, then a second agent inherits it and exploits
+      tasks <span class="eq">K+1…N</span>.</p>
+    <div class="cards c2">
+      <div class="card"><h3 style="color:var(--accent)">Exploration efficiency</h3>
+        <p class="muted">Do the agent's actions produce experience that is <em>informative</em> about the latent?</p></div>
+      <div class="card"><h3 style="color:var(--good)">Exploitation efficiency</h3>
+        <p class="muted">Does the agent <em>convert</em> that experience into better decisions on later tasks?</p></div>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      <a class="btn primary" href="metrics.html#explore-exploit">Try the interactive explainer →</a>
+      <a class="btn" href="environments.html">See the 7 environments →</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-root"></div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

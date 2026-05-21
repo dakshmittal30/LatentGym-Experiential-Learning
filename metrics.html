@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metrics — Cross-Task Adaptation</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="metrics">
+<div id="nav-root"></div>
+
+<section class="hero" style="padding-bottom:6px">
+  <div class="wrap narrow">
+    <div class="section-tag">Metrics &amp; glossary</div>
+    <h1>How we measure adaptation</h1>
+    <p class="lede">Standard metrics tell you <em>whether</em> an agent improved. Ours also tell you
+      <em>how</em> — by separating exploration from exploitation.</p>
+  </div>
+</section>
+
+<!-- standard metrics -->
+<section>
+  <div class="wrap narrow">
+    <h2>Return-sequence metrics</h2>
+    <p>An agent's behavior over a sequence is summarized by its per-task returns
+      <span class="eq">G<sub>1</sub>, G<sub>2</sub>, …, G<sub>N</sub></span>, where
+      <span class="eq">G<sub>i</sub></span> is the return on task <em>i</em> given the history carried
+      from earlier tasks.</p>
+    <div class="cards c3">
+      <div class="card"><h3>Cumulative return</h3>
+        <div class="formula" style="font-size:1.05rem">&Sigma;<sub>i</sub> G<sub>i</sub></div>
+        <p class="muted small">Rewards uniform competence across the whole sequence. This is the reward we optimize during Cross-Task RL.</p></div>
+      <div class="card"><h3>Cross-task gain</h3>
+        <div class="formula" style="font-size:1.05rem">(G<sub>N</sub> &minus; G<sub>1</sub>) / G<sub>1</sub></div>
+        <p class="muted small">Directly isolates whether the agent gets better with experience. Read alongside final reward (floor/ceiling effects).</p></div>
+      <div class="card"><h3>Final-task return</h3>
+        <div class="formula" style="font-size:1.05rem">G<sub>N</sub></div>
+        <p class="muted small">Rewards final capability after the agent has had the full sequence to adapt.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- explore/exploit -->
+<section id="explore-exploit" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <h2>Exploration vs. exploitation efficiency</h2>
+    <p class="narrow">Within one agent's trajectory the two are entangled: a later-task return reflects
+      both <em>how informative</em> earlier interactions were and <em>how well</em> the agent acts on
+      them. We disentangle them with an <b>agent-switching experiment</b> — measuring each as a
+      <em>relative</em> quantity between two agents.</p>
+
+    <div class="narrow">
+      <p>Pick a switch point <span class="eq">K</span>. One agent (the <b style="color:var(--accent)">explorer</b>)
+        runs tasks <span class="eq">1…K</span> and builds the cross-task history
+        <span class="eq">h<sub>&lt;K</sub></span>. A second agent (the
+        <b style="color:var(--good)">exploiter</b>) inherits it and runs tasks
+        <span class="eq">K+1…N</span>. The tail return is
+        <span class="eq">G<sub>Y|X</sub> = &Sigma;<sub>i=K+1</sub><sup>N</sup> G<sub>i</sub></span>
+        when <span class="eq">&pi;<sub>X</sub></span> explores and <span class="eq">&pi;<sub>Y</sub></span> exploits.</p>
+      <div class="formula">
+        ExploreEff<sub>X</sub>(&pi;<sub>B</sub> | &pi;<sub>A</sub>) =
+        (G<sub>X|B</sub> &minus; G<sub>X|A</sub>) / G<sub>X|A</sub>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        ExploitEff<sub>X</sub>(&pi;<sub>B</sub> | &pi;<sub>A</sub>) =
+        (G<sub>B|X</sub> &minus; G<sub>A|X</sub>) / G<sub>A|X</sub>
+      </div>
+      <p class="small muted"><b>ExploreEff</b> holds the exploiter fixed at reference X and swaps the
+        explorer; <b>ExploitEff</b> holds the explorer fixed and swaps the exploiter.</p>
+    </div>
+
+    <!-- interactive simulator -->
+    <div class="switchsim" style="margin-top:18px">
+      <div class="sim-legend">
+        <span><b class="exp">Explorer</b> — builds h<sub>&lt;K</sub> on tasks 1…K</span>
+        <span><b class="exl">Exploiter</b> — acts on tasks K+1…N (tail return G<sub>Y|X</sub>)</span>
+      </div>
+      <div class="sim-track" id="sim-track"></div>
+      <div class="sim-controls">
+        <label class="small" style="font-weight:700">Switch point K = <span id="sim-k">4</span></label>
+        <input type="range" id="sim-slider" min="0" max="3" step="1" value="1">
+        <span class="small muted">Reference X:</span>
+        <select id="sim-ref" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px">
+          <option value="Cross-task">Cross-task RL</option>
+          <option value="Single-task">Single-task RL</option>
+        </select>
+      </div>
+      <p class="small muted">Comparing Cross-Task RL (π<sub>B</sub>) against Single-task RL
+        (π<sub>A</sub>) on Number Guessing — the relative tail-return advantage at each K (Table 8).</p>
+
+      <div class="sim-metrics">
+        <div class="sim-card explore">
+          <div class="sval" id="sim-explore">+2.5%</div>
+          <div class="slbl">Exploration efficiency — does Cross-Task RL gather <em>more informative</em> experience?</div>
+        </div>
+        <div class="sim-card exploit">
+          <div class="sval" id="sim-exploit">+16.4%</div>
+          <div class="slbl">Exploitation efficiency — does it <em>convert</em> that experience into better later decisions?</div>
+        </div>
+      </div>
+      <p class="small" id="sim-takeaway" style="margin-top:14px"></p>
+    </div>
+
+    <p class="narrow small muted" style="margin-top:16px">As K grows, the explorer has more turns to
+      gather evidence (exploration efficiency trends up), while the exploiter has fewer remaining tasks
+      to act on (exploitation efficiency trends down). On Number Guessing the exploitation gap dominates
+      the exploration gap by roughly 2–30× — it's the larger driver of Cross-Task RL's lift.</p>
+    <a class="btn" href="findings.html#explore-exploit-results">See Table 8 and Figure 4 →</a>
+  </div>
+</section>
+
+<!-- glossary -->
+<section>
+  <div class="wrap narrow">
+    <h2>Glossary</h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th style="text-align:left">Term</th><th style="text-align:left">Meaning</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left"><b>Latent <em>z</em></b></td><td style="text-align:left">The hidden structure shared across all tasks in a sequence — the object of adaptation.</td></tr>
+          <tr><td style="text-align:left"><b>Task / episode</b></td><td style="text-align:left">One game instance the agent plays. A sequence has N of them (default N=10).</td></tr>
+          <tr><td style="text-align:left"><b>In-context adaptation</b></td><td style="text-align:left">Policy weights are fixed; the agent adapts only through the context it carries across tasks.</td></tr>
+          <tr><td style="text-align:left"><b>Cross-Task RL</b></td><td style="text-align:left">Fine-tuning on full task sequences, rewarding the whole return sequence (vs. single-task RL on N=1).</td></tr>
+          <tr><td style="text-align:left"><b>Agent-switching</b></td><td style="text-align:left">Handing the cross-task history from an explorer agent to an exploiter agent at switch point K.</td></tr>
+          <tr><td style="text-align:left"><b>OOD-1 / OOD-2</b></td><td style="text-align:left">Generalization to held-out latents (same env) / held-out environments (leave-one-out).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div id="footer-root"></div>
+<script src="assets/js/site.js"></script>
+<script>
+const KVALS = [2, 4, 6, 8], N = 10;
+const TABLE8 = {
+  "Cross-task": {2:[0.7,25.3], 4:[2.5,16.4], 6:[2.9,13.0], 8:[11.6,16.3]},
+  "Single-task":{2:[4.4,30.1], 4:[14.2,29.5], 6:[16.9,28.5], 8:[17.4,22.7]},
+};
+const track = document.getElementById("sim-track");
+const slider = document.getElementById("sim-slider");
+const refSel = document.getElementById("sim-ref");
+
+function drawTrack(K) {
+  let html = "";
+  for (let i = 1; i <= N; i++) {
+    const role = i <= K ? "explore" : "exploit";
+    const tail = i > K ? " tail" : "";
+    const label = i <= K ? "explore" : "exploit";
+    html += `<div class="sim-task ${role}${tail}"><span class="ti">task ${i}</span>${label}</div>`;
+  }
+  track.innerHTML = html;
+  // brief pulse on the tail to convey the handoff
+  track.querySelectorAll(".tail").forEach((el, j) => {
+    el.style.animation = "none"; void el.offsetWidth;
+    el.style.animation = `fadein .35s ease ${j * 0.03}s both`;
+  });
+}
+
+function update() {
+  const K = KVALS[+slider.value];
+  const X = refSel.value;
+  document.getElementById("sim-k").textContent = K;
+  drawTrack(K);
+  const [explore, exploit] = TABLE8[X][K];
+  document.getElementById("sim-explore").textContent = (explore >= 0 ? "+" : "") + explore.toFixed(1) + "%";
+  document.getElementById("sim-exploit").textContent = (exploit >= 0 ? "+" : "") + exploit.toFixed(1) + "%";
+  const ratio = (exploit / Math.max(explore, 0.1)).toFixed(0);
+  document.getElementById("sim-takeaway").innerHTML =
+    `At K=${K} (reference = ${X} RL), exploitation efficiency (<b style="color:var(--good)">+${exploit.toFixed(1)}%</b>)
+     exceeds exploration efficiency (<b style="color:var(--accent)">+${explore.toFixed(1)}%</b>) by ~${ratio}×.
+     Both are positive: Cross-Task RL is a better explorer <em>and</em> a better exploiter.`;
+}
+slider.addEventListener("input", update);
+refSel.addEventListener("change", update);
+update();
+</script>
+</body>
+</html>

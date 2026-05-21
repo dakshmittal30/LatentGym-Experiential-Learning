@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resources — Cross-Task Adaptation</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="resources">
+<div id="nav-root"></div>
+
+<section class="hero" style="padding-bottom:6px">
+  <div class="wrap narrow">
+    <div class="section-tag">Code &amp; data</div>
+    <h1>Resources</h1>
+    <p class="lede">The framework, training pipeline, and trajectory data are open. New environments,
+      latent families, and RL algorithms can be plugged in without touching the surrounding tooling.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cards c3">
+      <a class="card" data-link="code" href="#"><div class="ico">💻</div><h3>GitHub</h3>
+        <p class="muted">Environments, evaluation harness, GRPO training pipeline, and reporting tools.</p></a>
+      <a class="card" data-link="paper" href="#"><div class="ico">📄</div><h3>Paper</h3>
+        <p class="muted">Full method, experiments, and appendices.</p></a>
+      <a class="card" data-link="blog" href="#"><div class="ico">✍️</div><h3>Blog</h3>
+        <p class="muted">An accessible walkthrough of the main ideas and results.</p></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap narrow">
+    <h2>What's in the framework</h2>
+    <ul class="clean">
+      <li><b>7 environments</b> built on TextArena, each composable as <code>core × latent × prompt × feedback × N</code>.</li>
+      <li><b>Evaluation pipeline</b> for single-agent and double-agent (agent-switching) runs, plus exploration/exploitation metrics.</li>
+      <li><b>Cross-Task RL training</b> via GRPO over full task sequences, with an integrated dashboard for inspecting runs.</li>
+      <li><b>Recorded trajectories</b> for frontier models and Qwen3-8B (base / single-task RL / cross-task RL), powering this site's explorer.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap narrow">
+    <h2>Add a new environment</h2>
+    <p>An environment is defined by a handful of small modules. Implement each interface and register
+      it — the evaluator, trainer, and dashboards pick it up automatically.</p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th style="text-align:left">Module</th><th style="text-align:left">Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left"><code>core_env.py</code></td><td style="text-align:left">The single-episode decision problem (states, actions, reward).</td></tr>
+          <tr><td style="text-align:left"><code>latents.py</code></td><td style="text-align:left">Latent families — generator-based or filter-based.</td></tr>
+          <tr><td style="text-align:left"><code>prompts.py</code></td><td style="text-align:left">The <code>no/some/full</code> info prompt templates.</td></tr>
+          <tr><td style="text-align:left"><code>feedbacks.py</code></td><td style="text-align:left"><code>standard</code> vs <code>information</code> inter-task feedback.</td></tr>
+          <tr><td style="text-align:left"><code>trajectory_generator.py</code></td><td style="text-align:left">Roll out a full N-task sequence.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap narrow">
+    <h2>Citation</h2>
+    <div class="cite" id="cite-box" style="white-space:pre-wrap;font-family:var(--mono);font-size:.8rem;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px"></div>
+  </div>
+</section>
+
+<div id="footer-root"></div>
+<script src="assets/js/site.js"></script>
+<script>
+  document.getElementById("cite-box").textContent = BIBTEX;
+</script>
+</body>
+</html>

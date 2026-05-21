@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environments — Cross-Task Adaptation</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .env-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow-sm); margin-bottom: 18px; }
+  .env-card .ehead { display: flex; align-items: center; gap: 12px; }
+  .env-card .eico { font-size: 1.8rem; }
+  .env-card h3 { margin: 0; }
+  .env-card .core { color: var(--muted); margin: .5em 0 .2em; }
+  .latent-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: .6em 0; }
+  .latent-tags a { font-family: var(--mono); font-size: .76rem; background: var(--accent-soft);
+    color: var(--accent); padding: 3px 9px; border-radius: 999px; font-weight: 600; }
+  .latent-tags a:hover { text-decoration: none; background: #dfe5ff; }
+  .env-card details { margin-top: .6em; }
+  .env-card summary { color: var(--muted); font-size: .9rem; }
+  .promptbox { font-family: var(--mono); font-size: .78rem; background: var(--surface-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 8px 11px; margin: 6px 0; }
+  .promptbox b { color: var(--accent); }
+  .env-actions { margin-top: .8em; }
+</style>
+</head>
+<body data-page="environments">
+<div id="nav-root"></div>
+
+<section class="hero" style="padding-bottom:6px">
+  <div class="wrap narrow">
+    <div class="section-tag">Testbed</div>
+    <h1>Seven environments, one shared design</h1>
+    <p class="lede">Built on the TextArena text-game suite, each environment is a <b>sequence of games
+      drawn from a shared latent</b>. The agent is rewarded for getting better across the sequence.
+      Click any latent to stream a recorded trajectory.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" id="env-list"></div>
+</section>
+
+<div id="footer-root"></div>
+<script src="assets/js/site.js"></script>
+<script>
+const ENVS = [
+  { id:"number_guessing", icon:"🔢", name:"Number Guessing",
+    core:"Identify a hidden integer in a range; after each guess you're told higher, lower, or correct.",
+    families:"Restricted target set · range pattern",
+    diff:"Within-task: visible range. Latent-id: size of the hidden set.",
+    latents:["set_of_2","set_of_3","range_100","dynamic_range","two_ranges"],
+    prompts:{no:"Guess an integer between 1 and 1000. You'll play 10 rounds sequentially.",
+             some:"…The hidden numbers across rounds may follow a pattern.",
+             full:"…The hidden number is always drawn from a small fixed set — use this to solve later rounds in one guess."} },
+  { id:"bandits", icon:"🎰", name:"Bandits",
+    core:"Press buttons on a multi-armed bandit to find and commit to the most rewarding arm.",
+    families:"Shared best arm · reward pattern",
+    diff:"Latent governs which arm is best and how it moves across rounds.",
+    latents:["loyal_favorite_0","ping_pong","even_indices_only","top_two_fixed"],
+    prompts:{no:"Press buttons to find the most rewarding one; you'll play 10 rounds.",
+             some:"The best button across rounds may follow a hidden pattern.",
+             full:"The best button changes in a predictable pattern across games — track previous winners."} },
+  { id:"secretary", icon:"📋", name:"Secretary",
+    core:"Optimal stopping: accept or reject each candidate as it appears — you can't go back.",
+    families:"Threshold · position pattern",
+    diff:"Latent fixes where (or how good) the best candidate tends to be.",
+    latents:["threshold_06","best_is_last","fixed_position_2","increasing_position","sorted_order","inverse_order","prime_positions"],
+    prompts:{no:"Accept or reject each candidate as it appears; you can't go back. 10 rounds.",
+             some:"The position of the best candidate may follow a pattern across rounds.",
+             full:"The maximum tends to appear at a consistent position or region in the sequence."} },
+  { id:"mastermind", icon:"🔐", name:"Mastermind",
+    core:"Infer a hidden code from black/white peg feedback after each guess.",
+    families:"Code constraint · structural rule",
+    diff:"Latent constrains the space of valid codes.",
+    latents:["ascending","consecutive","mixed_parity","sum_divisible_by_3"],
+    prompts:{no:"Crack the secret code from peg feedback. 10 rounds.",
+             some:"The secret codes share a hidden structural pattern.",
+             full:"Every code satisfies a specific rule (e.g. digits in ascending order)."} },
+  { id:"wordladder", icon:"🪜", name:"Word Ladder",
+    core:"Transform a start word into a target by changing one letter at a time, staying a valid word.",
+    families:"Hub word · reusable path structure",
+    diff:"Latent fixes shared vocabulary or a hub word that routes many ladders.",
+    latents:["hub_word_3letter","hub_word_4letter","restricted_vocab_4letter","order_left_to_right","order_outside_in","subs_consonant_swaps"],
+    prompts:{no:"Transform the start word into the target, one letter at a time. 10 rounds.",
+             some:"The puzzles may share reusable structure across rounds.",
+             full:"All ladders route through a shared hub word — reuse it to solve faster."} },
+  { id:"wordle", icon:"🟩", name:"Wordle",
+    core:"Guess a hidden 5-letter word in six tries from green/yellow/gray feedback.",
+    families:"Shared word property · candidate set",
+    diff:"Latent fixes a property all target words share.",
+    latents:["letter_freq_high","letter_freq_medium","no_repeated_letters","mixed_balanced"],
+    prompts:{no:"Guess the hidden 5-letter word in 6 tries. 10 rounds.",
+             some:"The secret words across rounds may share a hidden property.",
+             full:"All target words share a property (e.g. exactly two vowels)."} },
+  { id:"hangman", icon:"🎯", name:"Hangman",
+    core:"Reveal a hidden word by guessing letters before running out of attempts.",
+    families:"Shared word category · letter pattern",
+    diff:"Latent fixes a category or letter pattern across the hidden words.",
+    latents:["category_objects","consonant_heavy","ending_ABLE","has_double_letter","starts_with_S","vowel_count_2","vowel_count_4","high_frequency_score"],
+    prompts:{no:"Reveal the hidden word by guessing letters. 10 rounds.",
+             some:"The hidden words may share a common feature across rounds.",
+             full:"All words belong to a shared category or share a letter pattern."} },
+];
+
+document.getElementById("env-list").innerHTML = ENVS.map(e => `
+  <div class="env-card" id="${e.id}">
+    <div class="ehead"><span class="eico">${e.icon}</span><h3>${e.name}</h3></div>
+    <p class="core">${e.core}</p>
+    <p class="small"><b>Representative latents:</b> ${e.families} &nbsp;·&nbsp;
+      <span class="muted">${e.diff}</span></p>
+    <div class="latent-tags">
+      ${e.latents.map(l => `<a href="explorer.html?env=${e.id}&latent=${l}">${l}</a>`).join("")}
+    </div>
+    <details>
+      <summary>Example prompts (no / some / full information)</summary>
+      <div class="promptbox"><b>no_info:</b> ${e.prompts.no}</div>
+      <div class="promptbox"><b>some_info:</b> ${e.prompts.some}</div>
+      <div class="promptbox"><b>full_info:</b> ${e.prompts.full}</div>
+    </details>
+    <div class="env-actions"><a class="btn" href="explorer.html?env=${e.id}">▶ Watch ${e.name} trajectories</a></div>
+  </div>`).join("");
+</script>
+</body>
+</html>

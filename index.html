@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probing Cross-Task Adaptation in LLM Agents</title>
+<meta name="description" content="A framework with explicit, controllable latents for studying whether LLM agents adapt across sequences of related tasks.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+<div id="nav-root"></div>
+
+<!-- ===================================================== HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="section-tag">Columbia · UChicago · Oumi AI</div>
+    <h1>Probing Cross-Task Adaptation in LLM Agents through Controllable Latents</h1>
+    <p class="lede">A framework where every environment is built around an explicit, ground-truth
+      <b>latent</b> that defines the hidden structure shared across a sequence of tasks — so we can
+      measure, for the first time, whether agents actually <em>learn from experience</em>.</p>
+    <p class="authors" id="hero-authors"></p>
+    <p class="affil">Equal contribution: Daksh Mittal, Tommaso Castellani, Thomson Yen</p>
+    <div class="btn-row">
+      <a class="btn primary" data-link="paper" href="#">📄 Paper</a>
+      <a class="btn" data-link="blog" href="#">✍️ Blog</a>
+      <a class="btn" data-link="code" href="#">💻 Code</a>
+      <a class="btn" href="explorer.html">▶ Explore trajectories</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===================================================== FIG 1 -->
+<section>
+  <div class="wrap">
+    <div class="taskstrip">
+      <div class="latent">Each task: guess a hidden integer in [1, 1000]. But targets are secretly
+        drawn from a fixed hidden set &nbsp;<b>z = {137, 793}</b>&nbsp; — the latent shared across the sequence.</div>
+      <div class="strip" id="fig1-strip"></div>
+      <div class="strip-legend">
+        <span class="l-early">Early tasks — binary search (no evidence yet)</span>
+        <span class="l-mid">Mid — hypothesis forming</span>
+        <span class="l-late">Late — recall the latent, solve in 1 turn</span>
+      </div>
+    </div>
+    <p class="small muted center" style="margin-top:.8em">An agent that adapts spends fewer turns on
+      later tasks by reusing what it learned. The latent is known to us, so every failure to adapt is diagnosable.</p>
+  </div>
+</section>
+
+<!-- ===================================================== TL;DR -->
+<section>
+  <div class="wrap narrow">
+    <div class="section-tag">TL;DR</div>
+    <ul class="clean">
+      <li>Existing LLM benchmarks can't say <em>why</em> an agent fails to adapt. We fix this with environments built around an <b>explicit, controllable latent</b>.</li>
+      <li>We separate adaptation into two measurable capabilities: <b>exploration efficiency</b> (does behavior gather information about the latent?) and <b>exploitation efficiency</b> (does the agent act on it?).</li>
+      <li>Frontier models (Claude Sonnet 4.6, GPT-4o, Gemini 2.5 Flash) <b>fail at cross-task adaptation</b> even under simple latents — in three distinct ways.</li>
+      <li><b>Cross-Task RL</b> (GRPO over full task sequences) reliably <b>induces adaptation</b>, and it <b>generalizes</b> to held-out latents and held-out environments.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================================================== ABSTRACT -->
+<section>
+  <div class="wrap narrow">
+    <div class="section-tag">Abstract</div>
+    <p>LLM agents are increasingly deployed in settings such as personalization and customer support,
+      where they encounter sequences of related tasks whose shared hidden structure can be leveraged
+      to improve performance on subsequent tasks. Yet the community lacks a systematic understanding
+      of whether agents can utilize earlier experience to better tackle later tasks. We introduce a
+      framework where each environment is built around an explicit, ground-truth latent variable that
+      defines the structure shared across a sequence of tasks, plus metrics that separate
+      <em>exploration</em> from <em>exploitation</em> as independently measurable capabilities. We
+      demonstrate its utility through three studies: how and why frontier models fail at cross-task
+      adaptation; whether post-training on sequences of related tasks induces general adaptation, and
+      where the improvement comes from; and how algorithmic choices such as inter-task feedback shape
+      training dynamics and generalization.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CONTRIBUTIONS -->
+<section>
+  <div class="wrap">
+    <div class="section-tag">Three contributions</div>
+    <div class="cards c3">
+      <a class="card" href="findings.html#failure-modes">
+        <div class="ico">🔍</div>
+        <h3>Frontier models fail</h3>
+        <p class="muted">Even under simple latents, models exhibit <b>adaptation neglect</b>,
+          <b>adaptation breakdown</b>, and <b>adaptation miscalibration</b>.</p>
+        <span class="pill">See failure modes →</span>
+      </a>
+      <a class="card" href="findings.html#cross-task-rl">
+        <div class="ico">🎯</div>
+        <h3>Cross-Task RL induces adaptation</h3>
+        <p class="muted">GRPO over full sequences makes adaptation reliable — and the gains
+          <b>transfer out of distribution</b>.</p>
+        <span class="pill">See results →</span>
+      </a>
+      <a class="card" href="findings.html#design-choices">
+        <div class="ico">⚙️</div>
+        <h3>Design choices matter</h3>
+        <p class="muted">Counterintuitively, training under <b>sparser feedback</b> transfers more
+          robustly across deployment conditions.</p>
+        <span class="pill">See ablations →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== MAIN RESULTS AT A GLANCE -->
+<section style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-tag">Main results at a glance</div>
+    <h2 style="margin-top:.2em">Cross-Task RL turns experience into competence</h2>
+    <div class="stats" style="margin:18px 0 28px">
+      <div class="stat"><div class="num">+99%</div><div class="lbl">cumulative reward vs. base model</div></div>
+      <div class="stat"><div class="num">+39%</div><div class="lbl">vs. single-task RL</div></div>
+      <div class="stat"><div class="num">+55%</div><div class="lbl">on held-out latents (OOD)</div></div>
+      <div class="stat"><div class="num">+14%</div><div class="lbl">on held-out environments (OOD)</div></div>
+    </div>
+
+    <div class="fig-grid">
+      <figure>
+        <img src="assets/img/grid_no_info_models.png" alt="Average reward across tasks for three frontier models on Number Guessing, Secretary, and Bandits.">
+        <figcaption><b>Frontier models don't improve across tasks.</b> Average reward stays flat over a
+          10-task sequence under the no-information prompt. <a href="findings.html#failure-modes">Why they fail →</a></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/agentswitch_ng_base_vs_cross.png" alt="Cross-task RL versus base on number guessing.">
+        <figcaption><b>After Cross-Task RL, agents adapt.</b> Per-task reward rises across the sequence —
+          the agent reuses earlier experience. <a href="findings.html#cross-task-rl">See the training results →</a></figcaption>
+      </figure>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      <a class="btn primary" href="findings.html">Full results &amp; leaderboard →</a>
+      <a class="btn" href="metrics.html#explore-exploit">How we measure adaptation →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== EXPLORE CTA -->
+<section>
+  <div class="wrap narrow center">
+    <h2>Watch agents play — turn by turn</h2>
+    <p class="muted">Pick an environment, prompt, feedback, and model, then stream the recorded
+      trajectory. Or compare a Qwen3-8B agent <b>before vs. after</b> Cross-Task RL on the same task.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn primary" href="explorer.html">▶ Open the Trajectory Explorer</a>
+      <a class="btn" href="environments.html">Browse the 7 environments</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-root"></div>
+<script src="assets/js/site.js"></script>
+<script>
+  // hero author line
+  document.getElementById("hero-authors").innerHTML =
+    "Daksh Mittal, Tommaso Castellani, Thomson Yen, Naimeng Ye, Fangyu Wu, Minghui Chen, Tiffany Cai, Emmanouil Koukoumidis, William Zeng, Hongseok Namkoong";
+
+  // Fig.1 task strip
+  const TASKS = [
+    {t:1, turns:9, target:137, note:"binary search"},
+    {t:2, turns:8, target:793, note:"binary search"},
+    {t:3, turns:8, target:137, note:"“have I seen this?”"},
+    {t:4, turns:6, target:793, note:"testing 137 / 793"},
+    {t:5, turns:5, target:137, note:"testing 137 / 793"},
+    {t:6, turns:4, target:793, note:"hypothesis forming"},
+    {t:7, turns:3, target:137, note:"recall latent"},
+    {t:8, turns:2, target:793, note:"recall latent"},
+    {t:9, turns:1, target:137, note:"guess 137 ✓"},
+    {t:10,turns:1, target:793, note:"guess 793 ✓"},
+  ];
+  const strip = document.getElementById("fig1-strip");
+  strip.innerHTML = TASKS.map((d,i) => {
+    const cls = i < 3 ? "" : (i < 6 ? "mid" : "late");
+    return `<div class="tcell ${cls}">
+      <div class="tbar-wrap"><div class="tbar" data-h="${Math.round(d.turns/9*100)}"></div></div>
+      <div class="tturns">${d.turns} ${d.turns===1?'turn':'turns'}</div>
+      <div class="tlabel">Task ${d.t} · ${d.target}</div>
+      <div class="tmeta">${d.note}</div>
+    </div>`;
+  }).join("");
+  // animate bars after paint
+  requestAnimationFrame(() => setTimeout(() => {
+    strip.querySelectorAll(".tbar").forEach(b => b.style.height = b.dataset.h + "%");
+  }, 120));
+</script>
+</body>
+</html>
