@@ -1,191 +1,1226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Probing Cross-Task Adaptation in LLM Agents</title>
-<meta name="description" content="A framework with explicit, controllable latents for studying whether LLM agents adapt across sequences of related tasks.">
-<link rel="stylesheet" href="assets/css/style.css">
+<title>LatentGym: A Testbed for Cross-Task Experiential Learning</title>
+<meta name="description" content="LatentGym: a testbed with controllable latent structure for studying cross-task experiential learning in LLM agents. Environments, findings, and an interactive trajectory explorer.">
+<link rel="stylesheet" href="assets/css/style.css?v=200">
 </head>
-<body data-page="home">
-<div id="nav-root"></div>
+<body>
 
-<!-- ===================================================== HERO -->
-<header class="hero">
-  <div class="wrap">
-    <div class="section-tag">Columbia · UChicago · Oumi AI</div>
-    <h1>Probing Cross-Task Adaptation in LLM Agents through Controllable Latents</h1>
-    <p class="lede">A framework where every environment is built around an explicit, ground-truth
-      <b>latent</b> that defines the hidden structure shared across a sequence of tasks — so we can
-      measure, for the first time, whether agents actually <em>learn from experience</em>.</p>
-    <p class="authors" id="hero-authors"></p>
-    <p class="affil">Equal contribution: Daksh Mittal, Tommaso Castellani, Thomson Yen</p>
-    <div class="btn-row">
-      <a class="btn primary" data-link="paper" href="#">📄 Paper</a>
-      <a class="btn" data-link="blog" href="#">✍️ Blog</a>
-      <a class="btn" data-link="code" href="#">💻 Code</a>
-      <a class="btn" href="explorer.html">▶ Explore trajectories</a>
+<!-- ============================== TOP BAR ============================== -->
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">LG</span>
+    <div>
+      <div class="brand-title">LatentGym</div>
+      <div class="brand-sub">Cross-task experiential learning</div>
     </div>
   </div>
+  <nav class="topnav">
+    <div class="topbar-affils" aria-label="Affiliations">
+      <img src="assets/img/Columbia_Business_School_logo.png" alt="Columbia Business School" class="topbar-affil">
+      <img src="assets/img/oumi_ai_logo.png" alt="Oumi AI" class="topbar-affil">
+    </div>
+  </nav>
 </header>
 
-<!-- ===================================================== FIG 1 -->
-<section>
-  <div class="wrap">
-    <div class="taskstrip">
-      <div class="latent">Each task: guess a hidden integer in [1, 1000]. But targets are secretly
-        drawn from a fixed hidden set &nbsp;<b>z = {137, 793}</b>&nbsp; — the latent shared across the sequence.</div>
-      <div class="strip" id="fig1-strip"></div>
-      <div class="strip-legend">
-        <span class="l-early">Early tasks — binary search (no evidence yet)</span>
-        <span class="l-mid">Mid — hypothesis forming</span>
-        <span class="l-late">Late — recall the latent, solve in 1 turn</span>
+<div class="layout">
+
+  <!-- ============================== SIDEBAR ============================== -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <ul class="side-list" id="side-list">
+
+        <li class="active" data-target="overview">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5" rx=".8"/><rect x="9" y="2" width="5" height="5" rx=".8"/><rect x="2" y="9" width="5" height="5" rx=".8"/><rect x="9" y="9" width="5" height="5" rx=".8"/></svg></span>
+          <span class="side-label">Home</span>
+        </li>
+
+        <li class="side-group">Framework</li>
+
+        <li data-target="framework">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 13 V3 L8 6 L14 3 V13 L8 10 Z"/><path d="M8 6 V10"/></svg></span>
+          <span class="side-label">Composability and Extensibility</span>
+        </li>
+        <li data-target="metrics">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3 H13 L7 8 L13 13 H2"/></svg></span>
+          <span class="side-label">Diagnosing how an agent adapts</span>
+        </li>
+        <li data-target="environments">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="3" rx=".6"/><rect x="2" y="6.5" width="12" height="3" rx=".6"/><rect x="2" y="11" width="12" height="3" rx=".6"/></svg></span>
+          <span class="side-label">Instantiating with seven environments</span>
+        </li>
+
+        <li class="side-group">Findings</li>
+
+        <li data-target="failure-modes">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2 L14 13 H2 Z"/><line x1="8" y1="6.5" x2="8" y2="10"/><circle cx="8" cy="11.6" r=".7" fill="currentColor" stroke="none"/></svg></span>
+          <span class="side-label">Failure Modes of Frontier Models</span>
+        </li>
+        <li data-target="cross-task-rl">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,12 5,9 8,11 11,5 14,2"/><polyline points="11,2 14,2 14,5"/></svg></span>
+          <span class="side-label">Cross-Task RL</span>
+        </li>
+        <li data-target="design-choices">
+          <span class="side-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1 V3.5 M8 12.5 V15 M1 8 H3.5 M12.5 8 H15 M3 3 L4.7 4.7 M11.3 11.3 L13 13 M3 13 L4.7 11.3 M11.3 4.7 L13 3"/></svg></span>
+          <span class="side-label">Training conditions and transfer</span>
+        </li>
+
+        <li class="side-group side-group-clickable" data-target="explorer">Trajectory Explorer</li>
+      </ul>
+    </nav>
+    <div class="side-footer">
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================== CONTENT ============================== -->
+  <main class="content">
+
+    <!-- =================== OVERVIEW =================== -->
+    <section id="overview" class="panel active">
+      <div class="panel-header">
+        <div style="width:100%">
+          <div class="kicker">Columbia University · Oumi</div>
+          <div class="title-row">
+            <h1>LatentGym: A Testbed for Cross-Task Experiential Learning</h1>
+            <div class="hero-actions title-actions">
+              <a class="hero-btn hero-btn-primary" id="paper-link-hero" href="#">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <span>arXiv</span>
+              </a>
+              <a class="hero-btn" href="https://github.com/dakshmittal30/Adaptation-website">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.9.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.07.78 2.16 0 1.56-.01 2.81-.01 3.19 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+                <span>GitHub</span>
+              </a>
+            </div>
+          </div>
+          <div class="authors">
+            <span class="author">Daksh Mittal*</span><span class="author-sep">·</span>
+            <span class="author">Tommaso Castellani*</span><span class="author-sep">·</span>
+            <span class="author">Thomson Yen*</span><span class="author-sep">·</span>
+            <span class="author">Naimeng Ye</span><span class="author-sep">·</span>
+            <span class="author">Fangyu Wu</span><span class="author-sep">·</span>
+            <span class="author">Minghui Chen</span><span class="author-sep">·</span>
+            <span class="author">Tiffany Cai</span><span class="author-sep">·</span>
+            <span class="author">Emmanouil Koukoumidis</span><span class="author-sep">·</span>
+            <span class="author">William Zeng</span><span class="author-sep">·</span>
+            <span class="author">Hongseok Namkoong</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <p class="small muted center" style="margin-top:.8em">An agent that adapts spends fewer turns on
-      later tasks by reusing what it learned. The latent is known to us, so every failure to adapt is diagnosable.</p>
-  </div>
-</section>
 
-<!-- ===================================================== TL;DR -->
-<section>
-  <div class="wrap narrow">
-    <div class="section-tag">TL;DR</div>
-    <ul class="clean">
-      <li>Existing LLM benchmarks can't say <em>why</em> an agent fails to adapt. We fix this with environments built around an <b>explicit, controllable latent</b>.</li>
-      <li>We separate adaptation into two measurable capabilities: <b>exploration efficiency</b> (does behavior gather information about the latent?) and <b>exploitation efficiency</b> (does the agent act on it?).</li>
-      <li>Frontier models (Claude Sonnet 4.6, GPT-4o, Gemini 2.5 Flash) <b>fail at cross-task adaptation</b> even under simple latents — in three distinct ways.</li>
-      <li><b>Cross-Task RL</b> (GRPO over full task sequences) reliably <b>induces adaptation</b>, and it <b>generalizes</b> to held-out latents and held-out environments.</li>
-    </ul>
-  </div>
-</section>
+      <div class="card setup-card">
+        <div class="setup-grid setup-grid-wide">
+          <div class="setup-text">
+            <h2 class="setup-title">A testbed with controllable latent structure</h2>
+            <p class="setup-lead">LLM agents are increasingly deployed in settings where they handle <strong>sequences of related tasks</strong>: personalization, customer support, ongoing research assistants. The hidden structure shared across these tasks could be reused to improve later performance, yet whether current LLMs can actually leverage earlier experience to do better on later tasks is poorly understood.</p>
+            <p class="setup-lead">We introduce <strong>LatentGym</strong>, a testbed where every environment is built around an <strong>explicit, ground-truth latent</strong> that defines the structure shared across a sequence of tasks. Because the latent is known to the evaluator, we can pinpoint <em>where</em> an agent succeeds or fails: in evidence-gathering, in latent identification, or in acting on identified structure.</p>
+          </div>
+          <aside class="setup-aside">
+            <div class="setup-q">
+              <div class="setup-q-label">The thesis</div>
+              <p><strong>LatentGym</strong> makes cross-task learning <em>measurable</em> by giving the evaluator control over the hidden structure shared across tasks. With a known latent, we can diagnose where agents succeed, design metrics that separate exploration from exploitation, and train recipes that target each.</p>
+            </div>
+          </aside>
+        </div>
+        <figure class="setup-figure">
+          <div class="fig1-anim" id="fig1-anim">
+            <div class="fa-body">
+              <div class="fa-left">
 
-<!-- ===================================================== ABSTRACT -->
-<section>
-  <div class="wrap narrow">
-    <div class="section-tag">Abstract</div>
-    <p>LLM agents are increasingly deployed in settings such as personalization and customer support,
-      where they encounter sequences of related tasks whose shared hidden structure can be leveraged
-      to improve performance on subsequent tasks. Yet the community lacks a systematic understanding
-      of whether agents can utilize earlier experience to better tackle later tasks. We introduce a
-      framework where each environment is built around an explicit, ground-truth latent variable that
-      defines the structure shared across a sequence of tasks, plus metrics that separate
-      <em>exploration</em> from <em>exploitation</em> as independently measurable capabilities. We
-      demonstrate its utility through three studies: how and why frontier models fail at cross-task
-      adaptation; whether post-training on sequences of related tasks induces general adaptation, and
-      where the improvement comes from; and how algorithmic choices such as inter-task feedback shape
-      training dynamics and generalization.</p>
-  </div>
-</section>
+                <!-- Top row: Setting (reveals first; visually on right) + Prompt (reveals after; visually on left) -->
+                <div class="fa-top-row">
+                  <!-- 1. Setting (orange) — DOM-first so it reveals first -->
+                  <div class="fa-setting step" data-step="1">
+                    <span class="fa-setting-label">Setting:</span>
+                    Each task is to identify a hidden number between [1, 1000], but the hidden number is always either 137 or 793.
+                    <span class="fa-latent"><span class="fa-bold">Latent</span> = {137, 793}</span>
+                  </div>
+                  <!-- 2. Prompt (slate) — visually on left via CSS order -->
+                  <div class="fa-prompt step" data-step="2">
+                    <span class="fa-prompt-label">Prompt:</span> Solve a sequence of number games
+                  </div>
+                </div>
 
-<!-- ===================================================== CONTRIBUTIONS -->
-<section>
-  <div class="wrap">
-    <div class="section-tag">Three contributions</div>
-    <div class="cards c3">
-      <a class="card" href="findings.html#failure-modes">
-        <div class="ico">🔍</div>
-        <h3>Frontier models fail</h3>
-        <p class="muted">Even under simple latents, models exhibit <b>adaptation neglect</b>,
-          <b>adaptation breakdown</b>, and <b>adaptation miscalibration</b>.</p>
-        <span class="pill">See failure modes →</span>
-      </a>
-      <a class="card" href="findings.html#cross-task-rl">
-        <div class="ico">🎯</div>
-        <h3>Cross-Task RL induces adaptation</h3>
-        <p class="muted">GRPO over full sequences makes adaptation reliable — and the gains
-          <b>transfer out of distribution</b>.</p>
-        <span class="pill">See results →</span>
-      </a>
-      <a class="card" href="findings.html#design-choices">
-        <div class="ico">⚙️</div>
-        <h3>Design choices matter</h3>
-        <p class="muted">Counterintuitively, training under <b>sparser feedback</b> transfers more
-          robustly across deployment conditions.</p>
-        <span class="pill">See ablations →</span>
-      </a>
-    </div>
-  </div>
-</section>
+                <!-- 3. Arrow ↓ Prompt → Task 1 (sits under Prompt column, points down to Task 1) -->
+                <div class="fa-major-arrow step" data-step="3" aria-hidden="true">
+                  <svg viewBox="0 0 14 20" width="14" height="20"><line x1="7" y1="2" x2="7" y2="12" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/><polygon points="2 10 7 18 12 10" fill="#1a1a1a"/></svg>
+                </div>
 
-<!-- ===================================================== MAIN RESULTS AT A GLANCE -->
-<section style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
-  <div class="wrap">
-    <div class="section-tag">Main results at a glance</div>
-    <h2 style="margin-top:.2em">Cross-Task RL turns experience into competence</h2>
-    <div class="stats" style="margin:18px 0 28px">
-      <div class="stat"><div class="num">+99%</div><div class="lbl">cumulative reward vs. base model</div></div>
-      <div class="stat"><div class="num">+39%</div><div class="lbl">vs. single-task RL</div></div>
-      <div class="stat"><div class="num">+55%</div><div class="lbl">on held-out latents (OOD)</div></div>
-      <div class="stat"><div class="num">+14%</div><div class="lbl">on held-out environments (OOD)</div></div>
-    </div>
+                <!-- ============ Tasks row (3 parallel columns + curved inter-task arrows) ============ -->
+                <div class="fa-tasks-row">
 
-    <div class="fig-grid">
-      <figure>
-        <img src="assets/img/grid_no_info_models.png" alt="Average reward across tasks for three frontier models on Number Guessing, Secretary, and Bandits.">
-        <figcaption><b>Frontier models don't improve across tasks.</b> Average reward stays flat over a
-          10-task sequence under the no-information prompt. <a href="findings.html#failure-modes">Why they fail →</a></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/img/agentswitch_ng_base_vs_cross.png" alt="Cross-task RL versus base on number guessing.">
-        <figcaption><b>After Cross-Task RL, agents adapt.</b> Per-task reward rises across the sequence —
-          the agent reuses earlier experience. <a href="findings.html#cross-task-rl">See the training results →</a></figcaption>
-      </figure>
-    </div>
-    <div class="btn-row" style="margin-top:18px">
-      <a class="btn primary" href="findings.html">Full results &amp; leaderboard →</a>
-      <a class="btn" href="metrics.html#explore-exploit">How we measure adaptation →</a>
-    </div>
-  </div>
-</section>
+                  <!-- Task 1 column -->
+                  <div class="fa-task-col">
+                    <div class="fa-task-label step" data-step="4">Task 1 <span class="fa-task-target">(Target: 137)</span></div>
+                    <div class="fa-task-block step" data-step="5">
+                      <div class="fa-conv">
+                        <div class="fa-bubble task step" data-step="6"><span class="fa-bold">Task:</span>&nbsp;Identify the number in range [1, 1000]</div>
+                        <div class="fa-bubble agent step" data-step="7"><span class="fa-bold">Agent:</span>&nbsp;I will do binary search, 500</div>
+                        <div class="fa-bubble env step" data-step="8">It is less than 500</div>
+                        <div class="fa-bubble agent step" data-step="9"><span class="fa-bold">Agent:</span>&nbsp;250</div>
+                        <div class="fa-dots step" data-step="10">
+                          <div class="fa-cont-dots" aria-hidden="true">⋮</div>
+                          Continues for 7 more turns
+                        </div>
+                      </div>
+                    </div>
+                    <div class="fa-mini-arrow step" data-step="11" aria-hidden="true">
+                      <svg viewBox="0 0 14 18" width="14" height="18"><line x1="7" y1="2" x2="7" y2="10" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/><polygon points="2 8 7 16 12 8" fill="#1a1a1a"/></svg>
+                    </div>
+                    <div class="fa-feedback step" data-step="12">
+                      <span class="fa-fb-label">Feedback:</span> You guessed <b>137</b> correctly in <b>9 Turns</b>
+                    </div>
+                  </div>
 
-<!-- ===================================================== EXPLORE CTA -->
-<section>
-  <div class="wrap narrow center">
-    <h2>Watch agents play — turn by turn</h2>
-    <p class="muted">Pick an environment, prompt, feedback, and model, then stream the recorded
-      trajectory. Or compare a Qwen3-8B agent <b>before vs. after</b> Cross-Task RL on the same task.</p>
-    <div class="btn-row" style="justify-content:center">
-      <a class="btn primary" href="explorer.html">▶ Open the Trajectory Explorer</a>
-      <a class="btn" href="environments.html">Browse the 7 environments</a>
-    </div>
-  </div>
-</section>
+                  <!-- curved arrow: centre of Task 1 feedback → top of Task 2 -->
+                  <div class="fa-col-arrow step" data-step="13" aria-hidden="true">
+                    <svg class="fa-curve-line" viewBox="0 0 50 220" preserveAspectRatio="none">
+                      <path d="M 6 200 Q 25 200 25 110 Q 25 22 38 22"
+                            stroke="#1a1a1a" stroke-width="1.8" fill="none"
+                            stroke-linecap="round" stroke-dasharray="4 4"
+                            vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <svg class="fa-curve-head" viewBox="0 0 10 8" width="10" height="8">
+                      <polygon points="0 0 10 4 0 8" fill="#1a1a1a"/>
+                    </svg>
+                  </div>
 
-<div id="footer-root"></div>
-<script src="assets/js/site.js"></script>
-<script>
-  // hero author line
-  document.getElementById("hero-authors").innerHTML =
-    "Daksh Mittal, Tommaso Castellani, Thomson Yen, Naimeng Ye, Fangyu Wu, Minghui Chen, Tiffany Cai, Emmanouil Koukoumidis, William Zeng, Hongseok Namkoong";
+                  <!-- Task 2 column -->
+                  <div class="fa-task-col">
+                    <div class="fa-task-label step" data-step="14">Task 2 <span class="fa-task-target">(Target: 793)</span></div>
+                    <div class="fa-task-block step" data-step="15">
+                      <div class="fa-conv">
+                        <div class="fa-bubble task step" data-step="16"><span class="fa-bold">Task:</span>&nbsp;Identify the number in range [1, 1000]</div>
+                        <div class="fa-bubble agent step" data-step="17"><span class="fa-bold">Agent:</span>&nbsp;I will do binary search, 500</div>
+                        <div class="fa-bubble env step" data-step="18">It is higher than 500</div>
+                        <div class="fa-bubble agent step" data-step="19"><span class="fa-bold">Agent:</span>&nbsp;750</div>
+                        <div class="fa-dots step" data-step="20">
+                          <div class="fa-cont-dots" aria-hidden="true">⋮</div>
+                          Continues for 6 more turns
+                        </div>
+                      </div>
+                    </div>
+                    <div class="fa-mini-arrow step" data-step="21" aria-hidden="true">
+                      <svg viewBox="0 0 14 18" width="14" height="18"><line x1="7" y1="2" x2="7" y2="10" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/><polygon points="2 8 7 16 12 8" fill="#1a1a1a"/></svg>
+                    </div>
+                    <div class="fa-feedback step" data-step="22">
+                      <span class="fa-fb-label">Feedback:</span> You guessed <b>793</b> correctly in <b>8 Turns</b>
+                    </div>
+                  </div>
 
-  // Fig.1 task strip
-  const TASKS = [
-    {t:1, turns:9, target:137, note:"binary search"},
-    {t:2, turns:8, target:793, note:"binary search"},
-    {t:3, turns:8, target:137, note:"“have I seen this?”"},
-    {t:4, turns:6, target:793, note:"testing 137 / 793"},
-    {t:5, turns:5, target:137, note:"testing 137 / 793"},
-    {t:6, turns:4, target:793, note:"hypothesis forming"},
-    {t:7, turns:3, target:137, note:"recall latent"},
-    {t:8, turns:2, target:793, note:"recall latent"},
-    {t:9, turns:1, target:137, note:"guess 137 ✓"},
-    {t:10,turns:1, target:793, note:"guess 793 ✓"},
-  ];
-  const strip = document.getElementById("fig1-strip");
-  strip.innerHTML = TASKS.map((d,i) => {
-    const cls = i < 3 ? "" : (i < 6 ? "mid" : "late");
-    return `<div class="tcell ${cls}">
-      <div class="tbar-wrap"><div class="tbar" data-h="${Math.round(d.turns/9*100)}"></div></div>
-      <div class="tturns">${d.turns} ${d.turns===1?'turn':'turns'}</div>
-      <div class="tlabel">Task ${d.t} · ${d.target}</div>
-      <div class="tmeta">${d.note}</div>
-    </div>`;
-  }).join("");
-  // animate bars after paint
-  requestAnimationFrame(() => setTimeout(() => {
-    strip.querySelectorAll(".tbar").forEach(b => b.style.height = b.dataset.h + "%");
-  }, 120));
-</script>
+                  <!-- horizontal dots + curved arrow (same shape as first, greyed): Task 2 feedback → Task 10 -->
+                  <div class="fa-col-arrow with-dots step" data-step="23" aria-hidden="true">
+                    <div class="fa-h-dots"><span></span><span></span><span></span></div>
+                    <svg class="fa-curve-line" viewBox="0 0 50 220" preserveAspectRatio="none">
+                      <path d="M 6 200 Q 25 200 25 110 Q 25 22 38 22"
+                            stroke="#9a9a9a" stroke-width="1.8" fill="none"
+                            stroke-linecap="round" stroke-dasharray="4 4"
+                            vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <svg class="fa-curve-head fa-curve-head-grey" viewBox="0 0 10 8" width="10" height="8">
+                      <polygon points="0 0 10 4 0 8" fill="#9a9a9a"/>
+                    </svg>
+                  </div>
+
+                  <!-- Task 10 column -->
+                  <div class="fa-task-col">
+                    <div class="fa-task-label step" data-step="24">Task 10 <span class="fa-task-target">(Target: 137)</span></div>
+                    <div class="fa-task-block step" data-step="25">
+                      <div class="fa-conv">
+                        <div class="fa-bubble task step" data-step="26"><span class="fa-bold">Task:</span>&nbsp;Identify the number in range [1, 1000]</div>
+                        <div class="fa-bubble agent step" data-step="27"><span class="fa-bold">Agent:</span>&nbsp;I am seeing 137 and 793 repeatedly, let me first guess one of them.&nbsp;137</div>
+                        <div class="fa-bubble env step" data-step="28">Correct!</div>
+                      </div>
+                    </div>
+                    <div class="fa-mini-arrow step" data-step="30" aria-hidden="true">
+                      <svg viewBox="0 0 14 18" width="14" height="18"><line x1="7" y1="2" x2="7" y2="10" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/><polygon points="2 8 7 16 12 8" fill="#1a1a1a"/></svg>
+                    </div>
+                    <div class="fa-feedback step" data-step="31">
+                      <span class="fa-fb-label">Feedback:</span> You guessed <b>137</b> correctly in <b>1 Turn</b>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Learning across tasks (bottom strip, full width of row) -->
+                <div class="fa-learn step" data-step="32">
+                  <span class="fa-learn-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 32 14" width="30" height="14"><line x1="2" y1="7" x2="22" y2="7" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" vector-effect="non-scaling-stroke"/><polygon points="20 3 28 7 20 11" fill="#1a1a1a"/></svg>
+                  </span>
+                  <span class="fa-learn-label">Learning Across Tasks (Turns taken reduces)</span>
+                </div>
+              </div>
+
+              <!-- RIGHT side: Our Contributions on top, then panels -->
+              <div class="fa-right">
+                <div class="fa-contrib step" data-step="30">Our Contributions</div>
+
+                <div class="fa-panel step" data-step="31">
+                  <div class="fa-panel-title">Environment Design</div>
+                  <div class="fa-panel-items">
+                    <div><span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2 V5 M12 19 V22 M2 12 H5 M19 12 H22 M4.6 4.6 L6.7 6.7 M17.3 17.3 L19.4 19.4 M4.6 19.4 L6.7 17.3 M17.3 6.7 L19.4 4.6"/></svg></span>Task Dynamics</div>
+                    <div><span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M 8 10 V 7 a 4 4 0 0 1 8 0 v 3"/></svg></span>Latent Structure</div>
+                    <div><span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg></span>Prompt Behaviour</div>
+                    <div><span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M 4 11 A 6 6 0 0 1 16 11"/><polyline points="14,7 16,11 19,8"/><path d="M 20 13 A 6 6 0 0 1 8 13"/><polyline points="10,17 8,13 5,16"/></svg></span>Feedback Type</div>
+                    <div><span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>Horizon</div>
+                  </div>
+                </div>
+
+                <div class="fa-panel step" data-step="32">
+                  <div class="fa-panel-title">Evaluation and Training</div>
+                  <div class="fa-panel-items">
+                    <div>
+                      <span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><rect x="6" y="12" width="3" height="8"/><rect x="11" y="8" width="3" height="12"/><rect x="16" y="4" width="3" height="16"/></svg></span>
+                      <div>New Metrics<br><span class="fa-sub">Exploration &amp; Exploitation Efficiency</span></div>
+                    </div>
+                    <div>
+                      <span class="fa-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><line x1="7.4" y1="7.4" x2="10.6" y2="12.6"/><line x1="16.6" y1="7.4" x2="13.4" y2="12.6"/><line x1="10.6" y1="15.4" x2="7.4" y2="18.6"/><line x1="13.4" y1="15.4" x2="16.6" y2="18.6"/></svg></span>
+                      <div>RL post-training on task sequence</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Animation controls (Skip + Replay) -->
+            <div class="fa-controls">
+              <button class="fa-ctrl" id="fig1-skip" type="button" aria-label="Skip animation">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                <span>Skip</span>
+              </button>
+              <button class="fa-ctrl primary" id="fig1-replay" type="button" aria-label="Replay animation">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span>Replay</span>
+              </button>
+            </div>
+          </div>
+          <figcaption>
+            The agent plays a sequence of N=10 tasks; each asks for a hidden integer in [1, 1000], but targets are secretly drawn from <code>z = {137, 793}</code>. Early on (Task 1) the agent does binary search and takes 9 turns. By Task 10, having seen 137 and 793 recur, it solves the task in 1 turn. Each environment in LatentGym factorizes along axes (task dynamics, prompt behavior, feedback type, horizon); we evaluate via new <em>exploration/exploitation</em> metrics and train with <em>Cross-Task RL</em>.
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- =================== FRAMEWORK overview (three sub-cards) =================== -->
+      <div class="card section-card">
+        <div class="card-head">
+          <h3>Framework</h3>
+          <p class="card-sub">Three pieces that make cross-task experiential learning studyable in isolation.</p>
+        </div>
+        <div class="grid three">
+        <a class="exp-card" data-jump="framework">
+          <h4>Software composition &amp; extensibility</h4>
+          <div class="graphic-box">
+            <div class="comp-wrap">
+              <div class="comp-modules">
+                <div class="comp-mod">
+                  <span class="comp-ico">🎮</span>
+                  <span class="comp-lbl">core_env</span>
+                </div>
+                <span class="comp-x">×</span>
+                <div class="comp-mod">
+                  <span class="comp-ico">🔒</span>
+                  <span class="comp-lbl">latent</span>
+                </div>
+                <span class="comp-x">×</span>
+                <div class="comp-mod">
+                  <span class="comp-ico">💬</span>
+                  <span class="comp-lbl">prompt</span>
+                </div>
+                <span class="comp-x">×</span>
+                <div class="comp-mod">
+                  <span class="comp-ico">🔄</span>
+                  <span class="comp-lbl">feedback</span>
+                </div>
+                <span class="comp-x">×</span>
+                <div class="comp-mod">
+                  <span class="comp-ico">🔁</span>
+                  <span class="comp-lbl">N&nbsp;tasks</span>
+                </div>
+              </div>
+              <div class="comp-arrow">↓</div>
+              <div class="comp-result">LatentGym Environment</div>
+            </div>
+          </div>
+          <p>Every environment is a handful of small modules: a core decision problem, a latent family, prompt templates, and a feedback handler. Compose them to define any environment you want, and plug in a new latent or feedback regime without touching anything else.</p>
+        </a>
+
+        <a class="exp-card" data-jump="metrics">
+          <h4>Diagnosing how agents adapt</h4>
+          <div class="graphic-box">
+            <div class="switch-diagram">
+              <div class="agent">
+                <span class="agent-ico explorer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="10" cy="10" r="6"/>
+                    <line x1="14.5" y1="14.5" x2="20" y2="20"/>
+                  </svg>
+                </span>
+                <div class="agent-name explorer">Explorer</div>
+                <div class="agent-sub">gathers experience</div>
+              </div>
+              <div class="switch-mid">
+                <div class="switch-track">
+                  <span class="t-block explore"></span>
+                  <span class="t-block explore"></span>
+                  <span class="t-block explore"></span>
+                  <span class="t-block explore"></span>
+                  <span class="t-gap"></span>
+                  <span class="t-block exploit"></span>
+                  <span class="t-block exploit"></span>
+                  <span class="t-block exploit"></span>
+                  <span class="t-block exploit"></span>
+                  <span class="t-block exploit"></span>
+                  <span class="t-block exploit"></span>
+                </div>
+                <div class="switch-labels">
+                  <span class="sl-early">early tasks</span>
+                  <span class="sl-later">later tasks</span>
+                </div>
+              </div>
+              <div class="agent">
+                <span class="agent-ico exploiter">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <circle cx="12" cy="12" r="5"/>
+                    <circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+                  </svg>
+                </span>
+                <div class="agent-name exploiter">Exploiter</div>
+                <div class="agent-sub">acts on it</div>
+              </div>
+            </div>
+          </div>
+          <p>Two ingredients of cross-task learning, <strong>exploration efficiency</strong> (does behavior gather information about the latent?) and <strong>exploitation efficiency</strong> (does it act on it?), measured by handing the cross-task history from one agent to another partway through the sequence.</p>
+        </a>
+
+        <a class="exp-card" data-jump="environments">
+          <h4>Instantiating: seven environments</h4>
+          <div class="graphic-box">
+            <div class="env-grid">
+              <div><span class="env-ico sm gray">🔢</span><div class="env-cap">Number Guessing</div></div>
+              <div><span class="env-ico sm gray">🎰</span><div class="env-cap">Bandits</div></div>
+              <div><span class="env-ico sm gray">📋</span><div class="env-cap">Secretary</div></div>
+              <div><span class="env-ico sm gray">🔐</span><div class="env-cap">Mastermind</div></div>
+              <div><span class="env-ico sm gray">🪜</span><div class="env-cap">Word Ladder</div></div>
+              <div><span class="env-ico sm gray">🟩</span><div class="env-cap">Wordle</div></div>
+              <div><span class="env-ico sm gray">🎯</span><div class="env-cap">Hangman</div></div>
+            </div>
+          </div>
+          <p>We instantiate LatentGym with seven environments built on TextArena: Number Guessing, Bandits, Secretary, Mastermind, Word Ladder, Wordle, and Hangman, each with a family of controllable latents at multiple difficulty tiers.</p>
+        </a>
+        </div>
+      </div>
+
+      <!-- =================== FINDINGS overview (three sub-cards) =================== -->
+      <div class="card section-card">
+        <div class="card-head">
+          <h3>Findings</h3>
+          <p class="card-sub">Three empirical studies enabled by LatentGym.</p>
+        </div>
+        <div class="grid three">
+        <a class="exp-card" data-jump="failure-modes">
+          <h4>Frontier models fail to adapt</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <!-- title + subtitle -->
+              <text x="150" y="15" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#1a1a1a">No improvement across tasks</text>
+              <text x="150" y="29" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-style="italic" font-weight="600" fill="#c63b3b">Models do not learn from experience</text>
+              <!-- axes (darker, thicker) -->
+              <line x1="34" y1="130" x2="230" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="42"  x2="34"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <!-- tick marks -->
+              <line x1="34" y1="130" x2="34" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="230" y1="130" x2="230" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <!-- 3 flat curves -->
+              <path d="M 38 65 L 80 67 L 135 63 L 185 66 L 226 65" fill="none" stroke="#1f6feb" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M 38 85 L 80 87 L 135 83 L 185 86 L 226 85" fill="none" stroke="#2e9e57" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M 38 102 L 80 104 L 135 100 L 185 103 L 226 102" fill="none" stroke="#d1342f" stroke-width="2.8" stroke-linecap="round"/>
+              <!-- end-dot model legend -->
+              <circle cx="226" cy="65"  r="3.6" fill="#1f6feb"/>
+              <text x="236" y="69" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Claude</text>
+              <circle cx="226" cy="85"  r="3.6" fill="#2e9e57"/>
+              <text x="236" y="89" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">GPT-4o</text>
+              <circle cx="226" cy="102" r="3.6" fill="#d1342f"/>
+              <text x="236" y="106" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Gemini</text>
+              <!-- axis labels (softer tone) -->
+              <text x="132" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Task index</text>
+              <text x="20"  y="86"  text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 20 86)">Reward</text>
+            </svg>
+          </div>
+          <p>Claude Sonnet 4.6, GPT-4o, and Gemini 2.5 Flash exhibit three failure modes (<em>adaptation neglect</em>, <em>breakdown</em>, <em>miscalibration</em>) even under simple latents.</p>
+        </a>
+
+        <a class="exp-card" data-jump="cross-task-rl">
+          <h4>Cross-Task RL induces adaptation</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <!-- title + subtitle -->
+              <text x="150" y="15" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#1a1a1a">Reward rises across the sequence</text>
+              <text x="150" y="29" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-style="italic" fill="#8a2030" font-weight="600">After Cross-Task RL: +99% cumulative</text>
+              <!-- axes -->
+              <line x1="34" y1="130" x2="250" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="42"  x2="34"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="130" x2="34" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="250" y1="130" x2="250" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <!-- baseline (before) -->
+              <path d="M 38 110 L 90 112 L 160 108 L 220 110 L 250 109" fill="none" stroke="#8a8a85" stroke-width="2.2" stroke-dasharray="4 3" opacity="0.75" stroke-linecap="round"/>
+              <text x="256" y="113" font-family="Inter, sans-serif" font-size="11.5" fill="#8a8a85" font-weight="600">Base</text>
+              <!-- rising curve (after RL) -->
+              <path d="M 38 105 Q 100 96 160 64 T 250 44" fill="none" stroke="#8a2030" stroke-width="3.2" stroke-linecap="round"/>
+              <text x="256" y="48" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#8a2030">After RL</text>
+              <!-- axis labels (bigger, capitalized) -->
+              <text x="142" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Task index</text>
+              <text x="20"  y="86"  text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 20 86)">Reward</text>
+            </svg>
+          </div>
+          <p>GRPO over full sequences improves cumulative reward by <b>+99%</b> over the base model and <b>+39%</b> over single-task RL, generalizing to held-out latents (<b>+55%</b>) and environments (<b>+14%</b>).</p>
+        </a>
+
+        <a class="exp-card" data-jump="design-choices">
+          <h4>Sparser feedback transfers better</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <!-- title -->
+              <text x="150" y="20" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1a1a1a">Models trained on sparse feedback are robust</text>
+              <!-- axes (darker, thicker) -->
+              <line x1="42" y1="130" x2="262" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="42" y1="42"  x2="42"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <!-- Bar 1: Standard (tall) -->
+              <rect x="92"  y="50" width="60" height="80" rx="3" fill="#8a2030"/>
+              <text x="122" y="44" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#8a2030">0.86</text>
+              <text x="122" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Sparse</text>
+              <!-- Bar 2: Full (short) -->
+              <rect x="180" y="86" width="60" height="44" rx="3" fill="#c44f5d" opacity="0.78"/>
+              <text x="210" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#c44f5d">0.41</text>
+              <text x="210" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Full</text>
+              <!-- y-axis label -->
+              <text x="28"  y="86" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 28 86)">Eval reward</text>
+            </svg>
+          </div>
+          <p>Counterintuitively, training under standard (binary) feedback transfers more robustly across deployment conditions than richer feedback, driven by robustness to the eval-feedback shift rather than faster learning.</p>
+        </a>
+        </div>
+      </div>
+
+      <!-- =================== CITE THIS WORK =================== -->
+      <h2 style="margin-top:34px">Cite this work</h2>
+      <div class="card cite-card">
+        <button class="copy-btn" id="copy-bib" title="Copy BibTeX">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span id="copy-bib-label">Copy</span>
+        </button>
+        <div class="cite" id="cite-home"></div>
+      </div>
+
+    </section>
+
+    <!-- =================== COMPOSABILITY =================== -->
+    <section id="framework" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Framework</div>
+        <h1>Composability and Extensibility</h1>
+        <p class="lead">A fully-specified environment is the product of five modular, swappable components, not hard-coded options inside a monolithic environment. Change one axis without touching the others.</p>
+      </div></div>
+
+      <!-- ============== Five design axes (compact 5-in-a-row + summary tile) ============== -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Five design axes</h3>
+          <p class="card-sub">Each component registers itself; the registry resolves any choice into a single runnable environment.</p></div>
+        <div class="axis-row">
+          <div class="axis-mini">
+            <span class="axis-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2 V5 M12 19 V22 M2 12 H5 M19 12 H22 M4.6 4.6 L6.7 6.7 M17.3 17.3 L19.4 19.4 M4.6 19.4 L6.7 17.3 M17.3 6.7 L19.4 4.6"/></svg></span>
+            <div class="axis-text"><h4>Core environment</h4><p>The within-task game: states, actions, reward in isolation.</p></div>
+          </div>
+          <div class="axis-mini">
+            <span class="axis-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M 8 10 V 7 a 4 4 0 0 1 8 0 v 3"/></svg></span>
+            <div class="axis-text"><h4>Latent</h4><p>The ground truth shared across all tasks in a sequence: the object of adaptation.</p></div>
+          </div>
+          <div class="axis-mini">
+            <span class="axis-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg></span>
+            <div class="axis-text"><h4>Prompt</h4><p>How much of the latent the agent is told up front; sets the prior.</p></div>
+          </div>
+          <div class="axis-mini">
+            <span class="axis-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M 4 11 A 6 6 0 0 1 16 11"/><polyline points="14,7 16,11 19,8"/><path d="M 20 13 A 6 6 0 0 1 8 13"/><polyline points="10,17 8,13 5,16"/></svg></span>
+            <div class="axis-text"><h4>Feedback</h4><p>What the agent observes between tasks; controls how fast evidence accumulates.</p></div>
+          </div>
+          <div class="axis-mini">
+            <span class="axis-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>
+            <div class="axis-text"><h4>Horizon <i>N</i></h4><p>How many tasks the sequence runs, setting how much support the agent has for adaptation.</p></div>
+          </div>
+        </div>
+        <div class="axis-summary">
+          <b>FullyDefinedEnv</b>
+          <code>= core-env &times; latent &times; prompt &times; feedback &times; <i>N</i></code>
+        </div>
+      </div>
+
+      <!-- ============== Features ============== -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Features</h3></div>
+        <div class="feature-list">
+
+          <!-- 1. Independent axes -->
+          <div class="feature-item">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h14"/><polyline points="13 3 17 7 13 11"/><path d="M21 17H7"/><polyline points="11 13 7 17 11 21"/></svg></span>
+            <div class="feature-body">
+              <h4>Each axis changes independently</h4>
+              <p>The registry resolves any combination into one runnable env, named by an identifier that records the choice (e.g. <code>number-guessing / set-of-3 / no-info / standard / ep10</code>).</p>
+            </div>
+          </div>
+
+          <!-- 2. One env, eval + training -->
+          <div class="feature-item">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><polyline points="7 7 12 2 17 7"/><polyline points="7 17 12 22 17 17"/></svg></span>
+            <div class="feature-body">
+              <h4>Built for evaluation and training</h4>
+              <p>One environment object serves both evaluation and training. A thin adapter exposes each LatentGym env to <a href="https://github.com/NovaSky-AI/SkyRL" target="_blank" rel="noopener">SkyRL</a>, which handles rollouts, weight sync, and policy optimization; built-in advantage estimators plug into the trainer.</p>
+            </div>
+          </div>
+
+          <!-- 3. Adding a new environment + code -->
+          <div class="feature-item">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>
+            <div class="feature-body">
+              <h4>Adding a new environment</h4>
+              <p>Write the single-task dynamics plus the registrations. Latents, prompts, and feedbacks live in their own files and register on import. Sequence generation, evaluation, and stream-level RL are inherited.</p>
+              <div class="transcript"># latentgym/envs/number_guessing/__init__.py     -- a whole environment in eight lines
+from latentgym.core import register_env
+from .core_env import NumberGuessingEnv          # the within-task game (one SingleEpisodeEnv)
+
+register_env("number_guessing", NumberGuessingEnv,
+             min_range=1, max_range=1000, max_turns_per_episode=30)
+
+from . import latents, prompts, feedbacks        # each registers itself on import</div>
+            </div>
+          </div>
+
+          <!-- 4. Mix-and-match within a single sequence -->
+          <div class="feature-item">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+            <div class="feature-body">
+              <h4>Mix-and-match across a sequence</h4>
+              <p>A single sequence can even draw on a different <em>core environment</em> for each task while sharing one latent.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============== Difficulty axes ============== -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Difficulty axes</h3>
+          <p class="card-sub">Example settings shown for Number Guessing.</p></div>
+        <div class="difficulty-grid">
+
+          <div class="difficulty-card">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="1"/><line x1="6" y1="9" x2="6" y2="13"/><line x1="9" y1="9" x2="9" y2="12"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="15" y1="9" x2="15" y2="12"/><line x1="18" y1="9" x2="18" y2="13"/></svg></span>
+            <div class="diff-body">
+              <h4>Within-task</h4>
+              <div class="set-by"><b>Set by</b> &middot; visible range</div>
+              <div class="example-chips">
+                <code>[1, 100]</code>
+                <code>[1, 1000]</code>
+                <code>[1, 10000]</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="difficulty-card">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg></span>
+            <div class="diff-body">
+              <h4>Latent-identification</h4>
+              <div class="set-by"><b>Set by</b> &middot; size of hidden set |z|</div>
+              <div class="example-chips">
+                <code>|z| = 2</code>
+                <code>|z| = 5</code>
+                <code>|z| = 10</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="difficulty-card">
+            <span class="axis-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></span>
+            <div class="diff-body">
+              <h4>Cross-task</h4>
+              <div class="set-by"><b>Set by</b> &middot; joint of the two</div>
+              <div class="example-chips">
+                <code>|z|=2 in [1,1000]</code>
+                <span class="vs">vs</span>
+                <code>|z|=10 in [1,100]</code>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============== Prompt and feedback conditions ============== -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Prompt and feedback conditions</h3>
+          <p class="card-sub">Two orthogonal axes that modulate how much support the agent gets for inferring and exploiting the latent.</p></div>
+        <div class="table-scroll"><table class="data">
+          <thead><tr><th>Prompt</th><th style="text-align:left">What's revealed</th><th style="text-align:left">What it tests</th></tr></thead>
+          <tbody>
+            <tr><td><code>no_info</code></td><td style="text-align:left">Nothing about cross-task structure.</td><td style="text-align:left">Does the agent discover structure on its own?</td></tr>
+            <tr><td><code>some_info</code></td><td style="text-align:left">A vague hint that recurring structure may exist.</td><td style="text-align:left">Does it identify the regularity efficiently?</td></tr>
+            <tr><td><code>full_info</code></td><td style="text-align:left">An explicit description of the latent.</td><td style="text-align:left">Can it use latent information when given?</td></tr>
+          </tbody>
+        </table></div>
+        <div class="table-scroll" style="margin-top:14px"><table class="data">
+          <thead><tr><th>Feedback</th><th style="text-align:left">What's revealed between tasks</th><th style="text-align:left">What it tests</th></tr></thead>
+          <tbody>
+            <tr><td><code>standard</code></td><td style="text-align:left">Only a binary success/failure signal after each task.</td><td style="text-align:left">Can the agent learn from sparse, realistic feedback?</td></tr>
+            <tr><td><code>information</code></td><td style="text-align:left">Ground-truth outcome revealed regardless of success.</td><td style="text-align:left">Does it improve once evidence accumulates faster?</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- =================== METRICS =================== -->
+    <section id="metrics" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Diagnostics</div>
+        <h1>Diagnosing how an agent adapts</h1>
+        <p class="lead" style="max-width:none">The reward curve r<sub>1</sub>, &hellip;, r<sub>N</sub> tells us <em>whether</em> an agent improved. It does not tell us <em>how</em>. Two agents with the same cumulative reward can differ sharply in whether they probe the latent or exploit what they already know, and the two failures call for different fixes.</p>
+      </div></div>
+
+      <div class="card section-card">
+        <div class="card-head"><h3>What standard summaries tell us</h3>
+          <p class="card-sub">Three views on the reward curve r<sub>1</sub>, &hellip;, r<sub>N</sub>. Each says <em>whether</em> the agent got better, not <em>how</em>.</p></div>
+        <div class="grid three" style="gap:10px">
+          <div class="exp-card metric-card">
+            <h4>Cumulative reward <span class="formula-inline">R = &Sigma;<sub>i</sub> r<sub>i</sub></span></h4>
+            <p>Uniform competence across the whole sequence. The reward we optimize during Cross-Task RL.</p>
+          </div>
+          <div class="exp-card metric-card">
+            <h4>Cross-task gain <span class="formula-inline">r<sub>N</sub> &minus; r<sub>1</sub></span></h4>
+            <p>Directly isolates whether the agent gets better with experience.</p>
+          </div>
+          <div class="exp-card metric-card">
+            <h4>Final-task reward <span class="formula-inline">r<sub>N</sub></span></h4>
+            <p>Final capability after the agent has had the whole sequence to adapt.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="card-head"><h3>Separating exploration and exploitation</h3>
+          <p class="card-sub">An agent's tail reward depends on two things at once: how well it <em>probes</em> the hidden latent (exploration), and how well it <em>acts</em> on what it has learned (exploitation). We separate them with a <b>two-agents experiment</b>: one agent plays tasks 1&hellip;K and builds the cross-task history; a different agent then inherits that running context and plays K+1&hellip;N. By <b>swapping who plays which half</b>, any change in the tail reward can be attributed cleanly to either the explorer or the exploiter alone.</p></div>
+
+        <div class="ho-anim" id="ho-anim">
+          <!-- One robot symbol reused throughout via <use href="#ho-robot"/> -->
+          <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+            <symbol id="ho-robot" viewBox="0 0 32 32">
+              <line x1="16" y1="4" x2="16" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="16" cy="3" r="1.5" fill="currentColor"/>
+              <rect x="7" y="9" width="18" height="16" rx="2.5" fill="currentColor"/>
+              <line x1="4" y1="14" x2="4" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <line x1="28" y1="14" x2="28" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="15" r="1.8" fill="#fff"/>
+              <circle cx="20" cy="15" r="1.8" fill="#fff"/>
+              <rect x="11" y="20" width="10" height="2.4" rx="1" fill="#fff"/>
+            </symbol>
+          </svg>
+
+          <!-- Steps 1 + 2: setup (left) and three agents (right) on one row -->
+          <div class="ho-toprow">
+
+            <!-- Step 1: Setup with interactive K slider -->
+            <div class="ho-setup step" data-step="1">
+              <div class="ho-setup-head">
+                <span><b>A sequence of 10 tasks</b> &middot; Hand-off K = <span id="ho-K">4</span></span>
+                <input type="range" id="ho-K-slider" min="0" max="3" step="1" value="1" class="ho-K-input" aria-label="Choose hand-off K"/>
+                <span class="small muted">slide to change K</span>
+              </div>
+              <div class="ho-tasks" id="ho-setup-tasks"></div>
+            </div>
+
+            <!-- Step 2: Three generic agents (sits beside setup on the same row) -->
+            <div class="ho-agents step" data-step="2">
+              <div class="ho-agent">
+                <span class="ho-agent-icon ho-A"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                <div class="ho-agent-name ho-A">Agent A</div>
+              </div>
+              <div class="ho-agent">
+                <span class="ho-agent-icon ho-B"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                <div class="ho-agent-name ho-B">Agent B</div>
+              </div>
+              <div class="ho-agent">
+                <span class="ho-agent-icon ho-C"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                <div class="ho-agent-name ho-C">Agent C</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Step 3: Two parallel blocks (exploration | exploitation) -->
+          <div class="ho-pair-blocks step" data-step="3">
+
+            <!-- LEFT block: Exploration efficiency -->
+            <div class="ho-eff-block">
+              <h4 class="ho-eff-title" style="color:#1a1a1a">Exploration efficiency</h4>
+
+              <div class="ho-mini-scenario">
+                <div class="ho-scenario-left">
+                  <div class="ho-scenario-head">
+                    <span class="ho-pair">
+                      <span class="badge ho-A"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                      <span class="arrow">&rarr;</span>
+                      <span class="badge ho-C"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                    </span>
+                    <span class="ho-scenario-label">A explores, C exploits</span>
+                  </div>
+                  <div class="ho-tasks" id="ho-tasks-AC"></div>
+                </div>
+                <div class="ho-tailsum">
+                  <span class="ho-tailsum-name">T<sub>1</sub></span>
+                  <span class="ho-tailsum-formula" id="ho-tailf-AC">r<sub>5</sub> + &hellip; + r<sub>10</sub></span>
+                </div>
+              </div>
+
+              <div class="ho-mini-scenario">
+                <div class="ho-scenario-left">
+                  <div class="ho-scenario-head">
+                    <span class="ho-pair">
+                      <span class="badge ho-B"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                      <span class="arrow">&rarr;</span>
+                      <span class="badge ho-C"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                    </span>
+                    <span class="ho-scenario-label">B explores, C exploits</span>
+                  </div>
+                  <div class="ho-tasks" id="ho-tasks-BC"></div>
+                </div>
+                <div class="ho-tailsum">
+                  <span class="ho-tailsum-name">T<sub>2</sub></span>
+                  <span class="ho-tailsum-formula" id="ho-tailf-BC">r<sub>5</sub> + &hellip; + r<sub>10</sub></span>
+                </div>
+              </div>
+
+              <div class="ho-eff-formula">
+                ExplorationEff(B vs A) = (T<sub>2</sub> &minus; T<sub>1</sub>) / T<sub>1</sub>
+              </div>
+            </div>
+
+            <!-- RIGHT block: Exploitation efficiency -->
+            <div class="ho-eff-block">
+              <h4 class="ho-eff-title" style="color:#1a1a1a">Exploitation efficiency</h4>
+
+              <div class="ho-mini-scenario">
+                <div class="ho-scenario-left">
+                  <div class="ho-scenario-head">
+                    <span class="ho-pair">
+                      <span class="badge ho-C"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                      <span class="arrow">&rarr;</span>
+                      <span class="badge ho-A"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                    </span>
+                    <span class="ho-scenario-label">C explores, A exploits</span>
+                  </div>
+                  <div class="ho-tasks" id="ho-tasks-CA"></div>
+                </div>
+                <div class="ho-tailsum">
+                  <span class="ho-tailsum-name">T<sub>1</sub>&prime;</span>
+                  <span class="ho-tailsum-formula" id="ho-tailf-CA">r<sub>5</sub> + &hellip; + r<sub>10</sub></span>
+                </div>
+              </div>
+
+              <div class="ho-mini-scenario">
+                <div class="ho-scenario-left">
+                  <div class="ho-scenario-head">
+                    <span class="ho-pair">
+                      <span class="badge ho-C"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                      <span class="arrow">&rarr;</span>
+                      <span class="badge ho-B"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#ho-robot"/></svg></span>
+                    </span>
+                    <span class="ho-scenario-label">C explores, B exploits</span>
+                  </div>
+                  <div class="ho-tasks" id="ho-tasks-CB"></div>
+                </div>
+                <div class="ho-tailsum">
+                  <span class="ho-tailsum-name">T<sub>2</sub>&prime;</span>
+                  <span class="ho-tailsum-formula" id="ho-tailf-CB">r<sub>5</sub> + &hellip; + r<sub>10</sub></span>
+                </div>
+              </div>
+
+              <div class="ho-eff-formula">
+                ExploitationEff(B vs A) = (T<sub>2</sub>&prime; &minus; T<sub>1</sub>&prime;) / T<sub>1</sub>&prime;
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Skip + Replay controls -->
+          <div class="ho-controls">
+            <button id="ho-skip" class="fa-ctrl" type="button" aria-label="Skip animation">Skip</button>
+            <button id="ho-replay" class="fa-ctrl primary" type="button" aria-label="Replay animation">&#9654; Replay</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="card-head"><h3>An Example: Cross-Task RL vs Single-Task RL (Number Guessing)</h3></div>
+        <div class="table-explain-grid">
+          <p class="table-explanation">Each cell is the relative tail-reward advantage of the Cross-task RL agent (CT) over the Single-task RL agent (ST) at switch point K. <b>ExploreGain<sub>C</sub></b> holds the exploiter fixed at the reference agent C and swaps the explorer. <b>ExploitGain<sub>C</sub></b> holds the explorer fixed at C and swaps the exploiter. We report both choices C &isin; {CT, ST} so you can see the gap is robust to the held-fixed role. All values positive: CT is both a better explorer and a better exploiter than ST.</p>
+          <div class="table-scroll"><table class="data compact">
+            <thead><tr>
+              <th>Switch point K</th>
+              <th>Reference C</th>
+              <th>ExploreGain<sub>C</sub></th>
+              <th>ExploitGain<sub>C</sub></th>
+            </tr></thead>
+            <tbody>
+              <tr><td rowspan="2"><b>2</b></td><td>C = CT</td><td class="pos">+0.7%</td><td class="pos">+25.3%</td></tr>
+              <tr>                              <td>C = ST</td><td class="pos">+4.4%</td><td class="pos">+30.1%</td></tr>
+              <tr><td rowspan="2"><b>4</b></td><td>C = CT</td><td class="pos">+2.5%</td><td class="pos">+16.4%</td></tr>
+              <tr>                              <td>C = ST</td><td class="pos">+14.2%</td><td class="pos">+29.5%</td></tr>
+              <tr><td rowspan="2"><b>6</b></td><td>C = CT</td><td class="pos">+2.9%</td><td class="pos">+13.0%</td></tr>
+              <tr>                              <td>C = ST</td><td class="pos">+16.9%</td><td class="pos">+28.5%</td></tr>
+              <tr><td rowspan="2"><b>8</b></td><td>C = CT</td><td class="pos">+11.6%</td><td class="pos">+16.3%</td></tr>
+              <tr>                              <td>C = ST</td><td class="pos">+17.4%</td><td class="pos">+22.7%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <figure class="example-figure">
+          <img src="assets/img/v1_4envs_ne1_vs_ne10_number_guessing.png" alt="Per-env agent-switching on Number Guessing: Single-task RL vs Cross-task RL across switch points.">
+        </figure>
+      </div>
+
+    </section>
+
+    <!-- =================== ENVIRONMENTS =================== -->
+    <section id="environments" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Testbed</div>
+        <h1>Instantiating with seven environments</h1>
+        <p class="lead" style="max-width:none">Built on TextArena, each environment is a <b>sequence of games drawn from a shared latent</b>. Click any latent to stream a recorded trajectory.</p>
+      </div></div>
+      <div id="env-list"></div>
+    </section>
+
+    <!-- =================== FAILURE MODES =================== -->
+    <section id="failure-modes" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Finding 1</div>
+        <h1>Failure Modes of Frontier Models</h1>
+        <p class="lead" style="max-width:none">A controlled testbed is only useful if existing models struggle on it. We evaluate three representative frontier models (GPT-4o, Claude Sonnet 4.6, and Gemini 2.5 Flash) chosen to span providers and capability profiles. Even under simple latents and across prompt conditions, these models fail at cross-task adaptation; inspecting individual trajectories surfaces three recurring failure modes.</p>
+      </div></div>
+
+      <!-- ============== Block 1: Adaptation Neglect ============== -->
+      <div class="card section-card failure-block">
+        <div class="card-head">
+          <h3>Adaptation neglect <span class="h3-sub">(models restart from scratch on every task)</span></h3>
+          <p class="card-sub">When models are not explicitly told that a hidden pattern exists, they solve each task largely independently, without attempting to infer reusable structure from previous experience. This appears across environments and even under very simple latents. The behavior may look reasonable in isolation (an instructed agent should not impose hidden assumptions), but real deployments contain recurring regularities that are not specified, and an agent that only acts on explicitly stated structure cannot improve with experience.</p>
+        </div>
+        <div class="failure-block-body">
+          <div class="failure-trajectories">
+            <h4>Example trajectories</h4>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=neglect&idx=0">&#9654; Claude Sonnet 4.6 &middot; Number Guessing (set_of_3)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=neglect&idx=1">&#9654; GPT-4o &middot; Number Guessing (set_of_3)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=neglect&idx=2">&#9654; Gemini 2.5 Flash &middot; Secretary (threshold_06)</a>
+            <a class="failure-traj-link primary" data-jump="explorer" data-prefill="mode=failure-modes&fm=neglect">&#9654; Browse all Adaptation neglect trajectories &rarr;</a>
+          </div>
+          <div class="failure-figure">
+            <img src="assets/img/grid_no_info_models.png" alt="Average reward across tasks under no_info.">
+            <div class="figure-caption">Flat reward curves under <code>no_info</code> across Number Guessing, Secretary, and Bandits: no improvement with experience.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== Block 2: Adaptation Breakdown ============== -->
+      <div class="card section-card failure-block">
+        <div class="card-head">
+          <h3>Adaptation breakdown <span class="h3-sub">(model sees the pattern but fails to act on it)</span></h3>
+          <p class="card-sub">When the prompt hints that some pattern may exist, models show partial but ineffective adaptation. Sometimes they ignore the hint and act myopically; sometimes they search for a pattern but identify the wrong one; sometimes they correctly infer part of the structure but never act on it; sometimes they overfit a pattern and drift away from the original task. Recognizing latent structure and exploiting it turn out to be <em>separable</em> capabilities: models can partially succeed at one while failing at the other.</p>
+        </div>
+        <div class="failure-block-body">
+          <div class="failure-trajectories">
+            <h4>Example trajectories</h4>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=breakdown&idx=0">&#9654; Gemini 2.5 Flash &middot; Number Guessing (dynamic_range)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=breakdown&idx=1">&#9654; Claude Sonnet 4.6 &middot; Number Guessing (two_ranges)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=breakdown&idx=2">&#9654; GPT-4o &middot; Mastermind (consecutive)</a>
+            <a class="failure-traj-link primary" data-jump="explorer" data-prefill="mode=failure-modes&fm=breakdown">&#9654; Browse all Adaptation breakdown trajectories &rarr;</a>
+          </div>
+          <div class="failure-figure">
+            <div class="failure-transcript">
+              <div class="transcript-title">Gemini 2.5 Flash &middot; Number Guessing (dynamic_range, some_info)</div>
+              <pre>Task 10, Agent: I've reviewed the previous nine games.
+The numbers, ranging from 1461 to 2278, are well below
+the upper bound of 10365, although I'll continue using
+binary search&hellip; [5365]   &hellip;12 more turns</pre>
+            </div>
+            <div class="figure-caption">The agent <em>names</em> the pattern, then ignores it.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== Block 3: Adaptation Miscalibration ============== -->
+      <div class="card section-card failure-block">
+        <div class="card-head">
+          <h3>Adaptation miscalibration <span class="h3-sub">(more information can make performance worse)</span></h3>
+          <p class="card-sub">Even when the relevant pattern is described explicitly, performance can degrade relative to a vaguer prompt. The explicit description introduces a competing sub-goal: instead of treating the latent as a calibrated prior, the model optimizes for demonstrating the stated pattern, over-applying the rule or choosing actions that satisfy its interpretation while violating the game's operational constraints. Examples include proposing off-graph words in Word Ladder, choosing the wrong sub-range in Number Guessing, committing to a single arm in alternating Bandits, and accepting too early in Secretary. In-context adaptation requires not just the right information, but the right <em>calibration</em> on it.</p>
+        </div>
+        <div class="failure-block-body">
+          <div class="failure-trajectories">
+            <h4>Example trajectories</h4>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=miscalibration&idx=0">&#9654; Claude Sonnet 4.6 &middot; Bandits (ping_pong)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=miscalibration&idx=1">&#9654; GPT-4o &middot; Word Ladder (hub_word_3letter)</a>
+            <a class="failure-traj-link" data-jump="explorer" data-prefill="mode=failure-modes&fm=miscalibration&idx=2">&#9654; Gemini 2.5 Flash &middot; Number Guessing (set_of_2)</a>
+            <a class="failure-traj-link primary" data-jump="explorer" data-prefill="mode=failure-modes&fm=miscalibration">&#9654; Browse all Adaptation miscalibration trajectories &rarr;</a>
+          </div>
+          <div class="failure-figure">
+            <img src="assets/img/grid_full_info_harms.png" alt="Examples where full information harms performance.">
+            <div class="figure-caption">Giving the latent explicitly (<code>full_info</code>) can hurt relative to a vaguer prompt, across Number Guessing, Word Ladder, and Bandits.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== CROSS-TASK RL =================== -->
+    <section id="cross-task-rl" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">RL recipe</div>
+        <h1>Cross-Task RL</h1>
+        <p class="lead" style="max-width:none">Can RL fine-tuning instill general cross-task experiential learning? We compare two recipes on Qwen3-8B: <b>single-task RL</b>, whose reward depends on a single task <code>r</code>; and <b>cross-task RL</b>, whose reward depends on the full sequence <code>r<sub>1</sub>, &hellip;, r<sub>N</sub></code> (we use <code>R = &Sigma;<sub>i</sub> r<sub>i</sub></code>), training the policy to use early tasks to infer the latent and act better on later ones.</p>
+      </div></div>
+
+      <!-- Three research questions (clickable tiles, jump to the answer card) -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Three questions we address</h3></div>
+        <div class="q-list">
+          <a class="q-item" href="#q1-card"><div class="q-num">Q1</div><div class="q-text">Is cross-task RL <b>necessary</b>, or does single-task RL on the same task family suffice?</div></a>
+          <a class="q-item" href="#q2-card"><div class="q-num">Q2</div><div class="q-text">Do the learned strategies <b>generalize</b> beyond the training distribution?</div></a>
+          <a class="q-item" href="#q3-card"><div class="q-num">Q3</div><div class="q-text">Which capability drives the lift, better <b>exploration</b> or better <b>exploitation</b>?</div></a>
+        </div>
+      </div>
+
+      <!-- Q1: Cross-task RL is necessary + multi-env training + before/after callout -->
+      <div class="card section-card" id="q1-card">
+        <div class="card-head"><h3>Q1 &middot; Cross-task RL is necessary</h3>
+          <p class="card-sub">Cross-task RL leads on every environment, beating the base by an average of <b>+99%</b> and single-task RL by <b>+39%</b> on cumulative reward. It is the <em>only</em> variant with consistently positive Gain across environments; single-task RL is negative on 5 of 6 environments, indistinguishable from the base. Largest single-environment lifts on Wordle (+91% vs single-task) and Number Guessing (+72%).</p></div>
+        <div class="view-toggle" data-card="t4">
+          <button class="active" data-view="table">Table</button>
+          <button data-view="bar">Bar chart</button>
+        </div>
+        <div class="table-scroll" data-view-target="t4-table"><table class="data plain" id="t4"></table></div>
+        <div class="bar-chart" data-view-target="t4-bar" id="t4-bar" hidden></div>
+
+        <!-- Sub-section: multi-env cross-task -->
+        <div class="card-head" style="margin-top:18px"><h4 style="margin-bottom:4px">Training across multiple environments helps further</h4>
+          <p class="card-sub">A single cross-task model trained on a <em>mixture</em> of environments beats the per-environment cross-task models by an average of <b>+19%</b> on cumulative reward (largest gain on Secretary, +33%). Suggests cross-task RL learns a general adaptation strategy rather than environment-specific cues.</p></div>
+        <div class="view-toggle" data-card="t5">
+          <button class="active" data-view="table">Table</button>
+          <button data-view="bar">Bar chart</button>
+        </div>
+        <div class="table-scroll" data-view-target="t5-table"><table class="data plain" id="t5"></table></div>
+        <div class="bar-chart" data-view-target="t5-bar" id="t5-bar" hidden></div>
+
+        <!-- Inline before/after callout: two side-by-side comparisons -->
+        <div class="callout good" style="margin-top:18px">
+          <div class="ctitle">See it for yourself: how training changes behavior</div>
+          <p class="small">Compare the same task solved by different Qwen3-8B variants. Cross-task RL needs fewer turns and uses the cross-task history; single-task RL improves the per-task ability but does not adapt across the sequence.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+            <a class="hero-btn hero-btn-primary" data-jump="explorer" data-prefill="mode=rl-variants&env=number_guessing&latent=set_of_3&variantA=qwen-base&variantB=qwen-cross-rl">&#9654; Base vs Cross-task RL</a>
+            <a class="hero-btn" data-jump="explorer" data-prefill="mode=rl-variants&env=number_guessing&latent=set_of_3&variantA=qwen-single-rl&variantB=qwen-cross-rl">&#9654; Single-task RL vs Cross-task RL</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2: generalization (OOD-1 and OOD-2) -->
+      <div class="card section-card" id="q2-card">
+        <div class="card-head"><h3>Q2 &middot; Strategies generalize beyond the training distribution</h3>
+          <p class="card-sub">A policy with a transferable adaptation strategy should generalize to <b>held-out latents within trained environments (OOD-1)</b> and to <b>entirely held-out environments (OOD-2)</b>. Cross-task RL beats the base by an average of <b>+55%</b> on OOD-1 and <b>+14%</b> on OOD-2, and lifts <code>r<sub>N</sub></code> in almost every OOD case despite not being directly trained on it.</p></div>
+
+        <div class="fig-grid">
+          <div>
+            <h4 style="margin-bottom:8px">Latent shift (OOD-1)</h4>
+            <div class="view-toggle" data-card="t6">
+              <button class="active" data-view="table">Table</button>
+              <button data-view="bar">Bar chart</button>
+            </div>
+            <div class="table-scroll" data-view-target="t6-table"><table class="data plain" id="t6"></table></div>
+            <div class="bar-chart" data-view-target="t6-bar" id="t6-bar" hidden></div>
+          </div>
+          <div>
+            <h4 style="margin-bottom:8px">Environment shift (OOD-2, leave-one-out)</h4>
+            <div class="view-toggle" data-card="t7">
+              <button class="active" data-view="table">Table</button>
+              <button data-view="bar">Bar chart</button>
+            </div>
+            <div class="table-scroll" data-view-target="t7-table"><table class="data plain" id="t7"></table></div>
+            <div class="bar-chart" data-view-target="t7-bar" id="t7-bar" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3: link to the metrics page hand-off experiment -->
+      <div class="card section-card" id="q3-card">
+        <div class="card-head"><h3>Q3 &middot; Where does the lift come from?</h3>
+          <p class="card-sub">To attribute Cross-Task RL's gain cleanly to either exploration or exploitation, we use the two-agents hand-off experiment defined on the diagnostics page. The numbers reported there isolate exploration efficiency and exploitation efficiency for CT vs ST on Number Guessing.</p></div>
+        <a class="hero-btn hero-btn-primary" data-jump="metrics" data-anchor="metrics">&#9654; See exploration vs exploitation efficiency &rarr;</a>
+      </div>
+
+    </section>
+
+    <!-- =================== DESIGN CHOICES =================== -->
+    <section id="design-choices" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Training design</div>
+        <h1>How training conditions shape generalization</h1>
+        <p class="lead" style="max-width:none">To show the kind of question LatentGym makes answerable, we ask how the <em>in-context feedback</em> and <em>prompt</em> used at training time affect generalization. We train Qwen3-8B under all combinations of {full-info, some-info} training prompt &times; {standard, information} training feedback, holding the cumulative-reward objective fixed, and evaluate each across all four prompt &times; feedback eval combinations.</p>
+      </div></div>
+
+      <!-- Setup + headline findings -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Two findings</h3></div>
+        <ul class="design-finding-list">
+          <li>
+            <b>Standard feedback at training time outperforms full feedback</b> under both prompt regimes, despite providing strictly less information between tasks. The advantage comes from <b>robustness to the eval-feedback shift</b>: full-feedback-trained models drop by 0.509 points when the eval feedback switches to standard; standard-feedback-trained models hold up.
+          </li>
+          <li>
+            <b>Prompt richness produces no substantive difference in aggregate, but with an asymmetry.</b> Full-info-trained models score +0.36 higher on full-info eval than on some-info eval, whereas some-info-trained models are essentially indifferent to the eval prompt. <b>Some-info training thus yields a more uniformly transferable model</b>, at the cost of the in-distribution advantage full-info training enjoys on full-info eval.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feedback: two named sub-blocks in a row -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Effect of training feedback</h3>
+          <p class="card-sub">Two views of the same sweep. <b>Left:</b> per <em>training</em> feedback, lines = eval feedbacks. <b>Right:</b> per <em>eval</em> feedback, lines = training feedbacks. Standard-feedback training transfers more robustly.</p></div>
+        <div class="design-figure-pair">
+          <div class="design-quad-block">
+            <div class="design-quad-title">Compare eval feedbacks within each training feedback</div>
+            <img src="assets/img/pf_sweep_feedback_by_train.png" alt="By training feedback panel, comparing eval feedbacks.">
+          </div>
+          <div class="design-quad-block">
+            <div class="design-quad-title">Compare training feedbacks within each eval feedback</div>
+            <img src="assets/img/pf_sweep_feedback_by_eval.png" alt="By eval feedback panel, comparing training feedbacks.">
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt: two named sub-blocks in a row -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Effect of training prompt</h3>
+          <p class="card-sub">Same two-view layout. <b>Left:</b> per <em>training</em> prompt, lines = eval prompts. <b>Right:</b> per <em>eval</em> prompt, lines = training prompts. Full-info-trained models lead on full-info eval; some-info-trained models are nearly flat across eval prompts.</p></div>
+        <div class="design-figure-pair">
+          <div class="design-quad-block">
+            <div class="design-quad-title">Compare eval prompts within each training prompt</div>
+            <img src="assets/img/pf_sweep_prompt_by_train.png" alt="By training prompt panel, comparing eval prompts.">
+          </div>
+          <div class="design-quad-block">
+            <div class="design-quad-title">Compare training prompts within each eval prompt</div>
+            <img src="assets/img/pf_sweep_prompt_by_eval.png" alt="By eval prompt panel, comparing training prompts.">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== EXPLORER =================== -->
+    <section id="explorer" class="panel">
+      <div class="panel-header"><div>
+        <div class="kicker">Interactive</div>
+        <h1>Trajectory explorer</h1>
+        <p class="lead" style="max-width:none">Three modes for browsing recorded trajectories. <b>Frontier models</b>: pick a frontier agent and a task and watch it play. <b>Failure modes</b>: jump directly to trajectories that illustrate Adaptation neglect, breakdown, or miscalibration. <b>RL variants</b>: place any two of the Qwen3-8B variants (Base / Single-task RL / Cross-task RL) side by side.</p>
+      </div></div>
+
+      <!-- ============== Mode tabs ============== -->
+      <div class="exp-modes" id="exp-modes">
+        <button class="exp-mode-btn active" data-mode="frontier">Frontier models (all trajectories)</button>
+        <button class="exp-mode-btn" data-mode="failure-modes">Example failure mode trajectories</button>
+        <button class="exp-mode-btn" data-mode="rl-variants">Base / Single-task RL / Cross-task RL</button>
+      </div>
+
+      <!-- Mode 3: failure-mode shortcuts (shown only when failure-modes mode is active) -->
+      <div class="exp-failure-tiles" id="exp-failure-tiles" hidden>
+        <div class="exp-failure-tile" data-fm="neglect">
+          <div class="fm-name">Adaptation neglect</div>
+          <div class="fm-sub">no_info prompt &middot; models restart from scratch</div>
+        </div>
+        <div class="exp-failure-tile" data-fm="breakdown">
+          <div class="fm-name">Adaptation breakdown</div>
+          <div class="fm-sub">some_info prompt &middot; sees the pattern, doesn't act</div>
+        </div>
+        <div class="exp-failure-tile" data-fm="miscalibration">
+          <div class="fm-name">Adaptation miscalibration</div>
+          <div class="fm-sub">full_info prompt &middot; more info, worse performance</div>
+        </div>
+      </div>
+
+      <!-- Mode 3: curated trajectory list for the selected failure mode -->
+      <div class="exp-failure-curated" id="exp-failure-curated" hidden></div>
+
+      <!-- Filters (used by Mode 1 + Mode 3, plus most fields in Mode 2). The Variant
+           dropdown is hidden in Mode 1 (locked to Frontier) and Mode 2 (locked to qwen). -->
+      <div class="exp-filters">
+        <div class="fld" id="fld-variant" style="display:none"><label>Variant</label><select id="f-variant"></select></div>
+        <div class="fld" id="fld-model"><label>Model</label><select id="f-model"></select></div>
+        <div class="fld" id="fld-env"><label>Environment</label><select id="f-env"></select></div>
+        <div class="fld" id="fld-latent"><label>Latent</label><select id="f-latent"></select></div>
+        <div class="fld" id="fld-prompt"><label>Prompt</label><select id="f-prompt"></select></div>
+        <div class="fld" id="fld-feedback"><label>Feedback</label><select id="f-feedback"></select></div>
+        <div class="fld" id="fld-horizon"><label>Horizon</label><select id="f-horizon"></select></div>
+        <div class="fld" id="fld-seed"><label>Seed</label><select id="f-seed"></select></div>
+      </div>
+
+      <!-- Mode 2: per-side variant pickers (Base / Single-task RL / Cross-task RL) -->
+      <div class="exp-rl-pickers" id="exp-rl-pickers" hidden>
+        <div class="rl-side">
+          <label>Left panel</label>
+          <select id="rl-A">
+            <option value="qwen-base">Base (Qwen3-8B)</option>
+            <option value="qwen-single-rl">Single-task RL</option>
+            <option value="qwen-cross-rl">Cross-task RL</option>
+          </select>
+        </div>
+        <div class="rl-vs">vs</div>
+        <div class="rl-side">
+          <label>Right panel</label>
+          <select id="rl-B">
+            <option value="qwen-base">Base (Qwen3-8B)</option>
+            <option value="qwen-single-rl">Single-task RL</option>
+            <option value="qwen-cross-rl" selected>Cross-task RL</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="status" class="small muted" style="margin:8px 2px"></div>
+
+      <div id="single-view">
+        <div id="exp-head"></div>
+        <div id="exp-summary"></div>
+        <div class="player-controls" id="controls" style="display:none">
+          <button class="btn" id="btn-restart" title="Restart">⏮</button>
+          <button class="btn" id="btn-prev" title="Step back">◀</button>
+          <button class="btn primary" id="btn-play" title="Play / pause">▶ Play</button>
+          <button class="btn" id="btn-next" title="Step forward">▶</button>
+          <input type="range" class="scrub" id="scrub" min="0" max="0" value="0">
+          <span class="ctr" id="ctr">0 / 0</span>
+          <select id="speed" title="Playback speed">
+            <option value="1400">0.5× (speed)</option>
+            <option value="700" selected>1× (speed)</option>
+            <option value="350">2× (speed)</option>
+            <option value="150">4× (speed)</option>
+          </select>
+          <button class="btn" id="btn-all" title="Reveal everything">Show full trajectory</button>
+        </div>
+        <div id="exp-body"></div>
+      </div>
+      <div id="compare-root" style="display:none"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="assets/js/script.js?v=195"></script>
+<script src="assets/js/explorer.js?v=195"></script>
 </body>
 </html>

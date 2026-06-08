@@ -1,5 +1,5 @@
 /* =============================================================================
-   leaderboard.js — aggregate data/index.json into a sortable agent leaderboard.
+   leaderboard.js : aggregate data/index.json into a sortable agent leaderboard.
    Rows = (variant, model). Columns = avg cumulative reward, avg gain%, avg final.
    Filters: prompt / feedback / horizon / environment. Pure client-side.
    ============================================================================= */
@@ -7,7 +7,6 @@
   const elTable = document.getElementById("lb-table");
   if (!elTable) return;
 
-  const VARIANT_ORDER = ["frontier", "qwen-base", "qwen-single-rl", "qwen-cross-rl"];
   const VARIANT_LABEL = {
     "frontier": "", "qwen-base": "Qwen3-8B · base",
     "qwen-single-rl": "Qwen3-8B · single-task RL", "qwen-cross-rl": "Qwen3-8B · cross-task RL",
@@ -18,10 +17,6 @@
   function agentName(r) {
     if (r.variant === "frontier") return r.model;
     return VARIANT_LABEL[r.variant] || r.variant;
-  }
-  function agentKind(r) {
-    if (r.variant === "frontier") return "frontier";
-    return r.variant;
   }
 
   function opt(sel, vals, labels) {
@@ -61,7 +56,7 @@
   function val(id) { const e = document.getElementById(id); return e ? e.value : "all"; }
 
   function fmtGain(v) {
-    if (v == null) return '<span class="muted">—</span>';
+    if (v == null) return '<span class="muted">n/a</span>';
     const cls = v >= 0 ? "pos" : "neg";
     return `<span class="${cls}">${v >= 0 ? "+" : ""}${v.toFixed(0)}%</span>`;
   }
@@ -87,9 +82,9 @@
       return `<tr>
         <td style="text-align:left"><b>${agentName(r)}</b></td>
         <td>${r.n}</td>
-        <td${best}>${r.cum != null ? r.cum.toFixed(2) : "—"}</td>
+        <td${best}>${r.cum != null ? r.cum.toFixed(2) : "n/a"}</td>
         <td>${fmtGain(r.gain)}</td>
-        <td>${r.fin != null ? r.fin.toFixed(2) : "—"}</td>
+        <td>${r.fin != null ? r.fin.toFixed(2) : "n/a"}</td>
       </tr>`;
     }).join("");
     elTable.innerHTML = head + "<tbody>" + body + "</tbody>";
@@ -116,5 +111,5 @@
     ["lb-prompt", "lb-feedback", "lb-horizon", "lb-env"].forEach(id =>
       document.getElementById(id).addEventListener("change", render));
     render();
-  }).catch(e => { elTable.innerHTML = `<tbody><tr><td>Could not load data/index.json — run a local server (see README). ${e}</td></tr></tbody>`; });
+  }).catch(e => { elTable.innerHTML = `<tbody><tr><td>Could not load data/index.json. Run a local server (see README). ${e}</td></tr></tbody>`; });
 })();
