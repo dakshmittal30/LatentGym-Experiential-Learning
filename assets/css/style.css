@@ -422,10 +422,6 @@ ul, ol { color: var(--ink-soft); }
 }
 @media (max-width: 720px) {
   .fa-tasks-row { flex-direction: column; align-items: stretch; }
-  /* Hide the inter-column curved arrows entirely on mobile — they were drawn for a
-     horizontal flow and rotating them breaks the curve shape and arrowhead overlay.
-     The Task 1 / Task 2 / Task 10 labels already make the sequence clear. */
-  .fa-col-arrow { display: none; }
 }
 
 /* ====== Mobile responsive: stack everything cleanly inside the figure ====== */
@@ -439,13 +435,57 @@ ul, ol { color: var(--ink-soft); }
   }
   .fa-top-row .fa-setting { order: 1; }
   .fa-top-row .fa-prompt  { order: 2; }
-  /* Major arrow: re-center now that the prompt is full-width */
-  .fa-major-arrow { margin-left: 0; align-self: center; }
-  /* Task columns stack and go full width; inter-column curved arrows are hidden
-     (see the 720px rule above) since they're horizontal-flow only. */
-  .fa-task-col { flex: 1 1 auto; max-width: 100%; margin-bottom: 12px; }
-  /* The horizontal dots between Task 2 and Task 10 don't make sense vertically */
+  /* Major arrow: force-center under the (now full-width) prompt — override the
+     desktop's hard margin-left: 100.5px which was calibrated for the 215px prompt column. */
+  .fa-major-arrow { margin-left: 0 !important; align-self: center; }
+  /* Task columns stack and go full width */
+  .fa-task-col { flex: 1 1 auto; max-width: 100%; margin-bottom: 4px; }
+  /* The original horizontal dots between Task 2 and Task 10 don't make sense vertically;
+     we render replacement vertical dots via a pseudo-element below. */
   .fa-h-dots { display: none; }
+
+  /* Inter-task arrows: the horizontal curves were drawn for a side-by-side layout.
+     On mobile we hide the SVGs and inject a simple vertical ↓ via a pseudo-element so
+     the flow between stacked Task columns is still legible. */
+  .fa-col-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 30px;
+    padding: 4px 0;
+    flex: 0 0 auto;
+  }
+  .fa-col-arrow > svg { display: none; }
+  .fa-col-arrow::after {
+    content: "↓";
+    font-size: 22px;
+    color: #1a1a1a;
+    line-height: 1;
+  }
+  /* The Task 2 → Task 10 connector additionally shows three vertical dots (the
+     "elided tasks" indicator) before the arrow, in the same grey as the original curve. */
+  .fa-col-arrow.with-dots { min-height: 60px; gap: 2px; align-items: flex-start; padding-left: 0; }
+  .fa-col-arrow.with-dots::before {
+    content: "⋮";
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    color: #9a9a9a;
+    line-height: 1;
+  }
+  .fa-col-arrow.with-dots::after {
+    width: 100%;
+    text-align: center;
+    color: #9a9a9a;
+  }
+
+  /* Learning Across Tasks: the right-pointing arrow only reads horizontally; drop it on mobile. */
+  .fa-learn { flex-direction: column; gap: 4px; }
+  .fa-learn-arrow { display: none; }
+
   /* Right column (Our Contributions + panels) stacked below — give it some top breathing room */
   .fa-right { gap: 10px; }
   .fa-contrib { margin-left: 0; margin-top: 12px; }
