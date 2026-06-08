@@ -470,11 +470,15 @@ ul, ol { color: var(--ink-soft); }
      (which has higher specificity than a plain `> svg` selector). */
   .fa-col-arrow .fa-curve-line,
   .fa-col-arrow .fa-curve-head { display: none; }
+  /* Inline SVG (same shape as the major arrow under the prompt: vertical line + triangle head)
+     rendered via background-image so we don't need to touch the HTML. */
   .fa-col-arrow::after {
-    content: "↓";
-    font-size: 22px;
-    color: #1a1a1a;
-    line-height: 1;
+    content: "";
+    display: block;
+    width: 14px; height: 20px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20'><line x1='7' y1='2' x2='7' y2='12' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/><polygon points='2 10 7 18 12 10' fill='%231a1a1a'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
   }
   /* The Task 2 → Task 10 connector: arrow first (right under Task 2's feedback), then a
      row of three horizontal dots (the "elided intermediate tasks" indicator), then Task 10.
@@ -486,25 +490,27 @@ ul, ol { color: var(--ink-soft); }
     padding-left: 0;
   }
   .fa-col-arrow.with-dots::before {
-    content: "↓";
+    content: "";
     display: block;
-    width: 100%;
-    text-align: center;
-    font-size: 22px;
-    color: #9a9a9a;
-    line-height: 1;
+    width: 14px; height: 20px;
+    margin: 0 auto;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20'><line x1='7' y1='2' x2='7' y2='12' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/><polygon points='2 10 7 18 12 10' fill='%231a1a1a'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
   }
   /* Override the plain .fa-col-arrow::after for the with-dots variant: instead of the
-     down-arrow, render a horizontal "• • •" so the order reads arrow → dots → Task 10. */
+     down-arrow SVG, render a horizontal "• • •" so the order reads arrow → dots → Task 10. */
   .fa-col-arrow.with-dots::after {
     content: "• • •";
     display: block;
     width: 100%;
+    height: auto;
     text-align: center;
     font-size: 14px;
     letter-spacing: 4px;
     color: #9a9a9a;
     line-height: 1;
+    background-image: none;
   }
 
   /* Learning Across Tasks: the right-pointing arrow only reads horizontally; drop it on mobile. */
