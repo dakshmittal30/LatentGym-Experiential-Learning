@@ -343,8 +343,8 @@ ul, ol { color: var(--ink-soft); }
 
 /* ====== body grid ====== */
 .fa-body {
-  display: grid; grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 4px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) 235px;
+  gap: 36px; align-items: start;
 }
 @media (max-width: 900px) { .fa-body { grid-template-columns: 1fr; } }
 
@@ -551,7 +551,7 @@ ul, ol { color: var(--ink-soft); }
 .fa-learn-label { font-size: 14.5px; font-weight: 700; color: #1a1a1a; font-family: var(--font-serif); }
 
 /* ====== RIGHT side: Our Contributions on top, then panels (gray) ====== */
-.fa-right { display: flex; flex-direction: column; gap: 24px; position: sticky; top: 70px; align-self: start; }
+.fa-right { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 70px; align-self: start; }
 
 /* Contributions header — small heading, floated at Setting's vertical center
    so the side panels can move up closer to the major arrow / tasks area */
@@ -575,7 +575,7 @@ ul, ol { color: var(--ink-soft); }
   background: #ececec;
   border: 1px solid #d6d6d6;
   border-radius: 8px;
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
 .fa-panel-title {
   font-family: var(--font-serif);
