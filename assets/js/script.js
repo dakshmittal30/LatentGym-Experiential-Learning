@@ -192,9 +192,12 @@
     if (reduced) {
       steps.forEach(s => s.classList.add("show"));
     } else if ("IntersectionObserver" in window) {
+      // threshold 0 (and a generous bottom rootMargin) so the figure autoplays even on
+      // mobile, where the stacked layout makes the block taller than the viewport and
+      // a percentage-based threshold (e.g. 0.25) would never be met.
       const obs = new IntersectionObserver((entries, o) => {
         entries.forEach(e => { if (e.isIntersecting) { play(); o.disconnect(); } });
-      }, { threshold: 0.25 });
+      }, { threshold: 0, rootMargin: "0px 0px -10% 0px" });
       obs.observe(figAnim);
     } else {
       play();
@@ -284,7 +287,7 @@
     } else if ("IntersectionObserver" in window) {
       const hoObs = new IntersectionObserver((entries, o) => {
         entries.forEach(e => { if (e.isIntersecting) { hoPlay(); o.disconnect(); } });
-      }, { threshold: 0.2 });
+      }, { threshold: 0, rootMargin: "0px 0px -10% 0px" });
       hoObs.observe(hoAnim);
     } else {
       hoPlay();
