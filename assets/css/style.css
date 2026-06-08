@@ -426,6 +426,32 @@ ul, ol { color: var(--ink-soft); }
   .fa-col-arrow svg { transform: rotate(90deg); min-height: 60px; }
 }
 
+/* ====== Mobile responsive: stack everything cleanly inside the figure ====== */
+@media (max-width: 760px) {
+  .fig1-anim { padding: 12px 10px 10px; overflow-x: hidden; }
+  /* Prompt + Setting: stack vertically, both full width */
+  .fa-top-row { flex-direction: column; gap: 10px; }
+  .fa-top-row .fa-prompt,
+  .fa-top-row .fa-setting {
+    flex: 1 1 auto; max-width: 100%; width: 100%;
+  }
+  /* Major arrow: re-center now that the prompt is full-width */
+  .fa-major-arrow { margin-left: 0; align-self: center; }
+  /* Task columns: full width, with-dots arrow no longer needs the 90px reservation */
+  .fa-task-col { flex: 1 1 auto; max-width: 100%; }
+  .fa-col-arrow,
+  .fa-col-arrow.with-dots { flex: 0 0 auto; min-height: 50px; width: 100%; }
+  .fa-col-arrow.with-dots .fa-curve-line { width: 100%; max-width: none; }
+  /* The horizontal dots between Task 2 and Task 10 don't make sense vertically */
+  .fa-h-dots { display: none; }
+  /* Arrowhead overlay is positioned for horizontal curves; rotating the parent SVG
+     breaks its placement, so hide it on mobile and let the dashed curve alone signal the flow. */
+  .fa-curve-head { display: none; }
+  /* Right column (Our Contributions + panels) stacked below — give it some top breathing room */
+  .fa-right { gap: 10px; }
+  .fa-contrib { margin-left: 0; margin-top: 12px; }
+}
+
 /* ====== 2. Prompt (slate RGB(81,83,108) / white text) ====== */
 .fa-prompt {
   background: #51536C;
