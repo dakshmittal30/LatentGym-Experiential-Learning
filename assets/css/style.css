@@ -436,8 +436,17 @@ ul, ol { color: var(--ink-soft); }
   .fa-top-row .fa-setting { order: 1; }
   .fa-top-row .fa-prompt  { order: 2; }
   /* Major arrow: force-center under the (now full-width) prompt — override the
-     desktop's hard margin-left: 100.5px which was calibrated for the 215px prompt column. */
-  .fa-major-arrow { margin-left: 0 !important; align-self: center; }
+     desktop's hard margin-left: 100.5px which was calibrated for the 215px prompt column.
+     We also set the wrapper div itself to a centered flex so the inner SVG is centered
+     even if the div ends up spanning the full column width. */
+  .fa-major-arrow {
+    margin-left: 0 !important;
+    align-self: stretch !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    text-align: center;
+  }
   /* Task columns stack and go full width */
   .fa-task-col { flex: 1 1 auto; max-width: 100%; margin-bottom: 4px; }
   /* The original horizontal dots between Task 2 and Task 10 don't make sense vertically;
@@ -457,18 +466,27 @@ ul, ol { color: var(--ink-soft); }
     padding: 4px 0;
     flex: 0 0 auto;
   }
-  .fa-col-arrow > svg { display: none; }
+  /* Use class selectors so this beats the desktop `.fa-col-arrow .fa-curve-line` rule
+     (which has higher specificity than a plain `> svg` selector). */
+  .fa-col-arrow .fa-curve-line,
+  .fa-col-arrow .fa-curve-head { display: none; }
   .fa-col-arrow::after {
     content: "↓";
     font-size: 22px;
     color: #1a1a1a;
     line-height: 1;
   }
-  /* The Task 2 → Task 10 connector additionally shows three vertical dots (the
-     "elided tasks" indicator) before the arrow, in the same grey as the original curve. */
-  .fa-col-arrow.with-dots { min-height: 60px; gap: 2px; align-items: flex-start; padding-left: 0; }
+  /* The Task 2 → Task 10 connector: arrow first (right under Task 2's feedback), then a
+     row of three horizontal dots (the "elided intermediate tasks" indicator), then Task 10.
+     Both rendered in the same grey as the original curved arrow. */
+  .fa-col-arrow.with-dots {
+    min-height: 60px;
+    gap: 6px;
+    align-items: center;
+    padding-left: 0;
+  }
   .fa-col-arrow.with-dots::before {
-    content: "⋮";
+    content: "↓";
     display: block;
     width: 100%;
     text-align: center;
@@ -476,10 +494,17 @@ ul, ol { color: var(--ink-soft); }
     color: #9a9a9a;
     line-height: 1;
   }
+  /* Override the plain .fa-col-arrow::after for the with-dots variant: instead of the
+     down-arrow, render a horizontal "• • •" so the order reads arrow → dots → Task 10. */
   .fa-col-arrow.with-dots::after {
+    content: "• • •";
+    display: block;
     width: 100%;
     text-align: center;
+    font-size: 14px;
+    letter-spacing: 4px;
     color: #9a9a9a;
+    line-height: 1;
   }
 
   /* Learning Across Tasks: the right-pointing arrow only reads horizontally; drop it on mobile. */
