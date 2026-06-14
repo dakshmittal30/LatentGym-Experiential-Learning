@@ -322,11 +322,10 @@ ul, ol { color: var(--ink-soft); }
 }
 .fa-top-row .fa-setting {
   order: 2;
-  /* tasks-row total = 215 + 56 + 215 + 90 + 215 = 791 px
-     Setting width = 791 − 215 (Prompt) − 14 (row gap) = 562 px so its right edge
-     lines up with the right edge of Task 10. */
-  flex: 0 0 562px;
+  /* 562 px right edge aligns with Task 10; shrinks (flex 1 1) when the cell is < 791 px so it can't overflow into the right column. */
+  flex: 1 1 562px;
   max-width: 562px;
+  min-width: 0;
   margin: 0;
   text-align: left;
 }
