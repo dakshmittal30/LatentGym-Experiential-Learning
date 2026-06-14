@@ -74,7 +74,7 @@
       : `<div class="ep-banner">Task ${ep} ended → Task ${ep + 1}</div>`;
   }
   function unitTransition(content, ep) {
-    return `<div class="msg" style="background:#fff8e1;border-left-color:#f9a825">
+    return `<div class="msg system">
       <div class="role" style="color:#f57f17">TRANSITION → NEW TASK <span class="muted" style="font-weight:400">(task ${ep})</span></div><pre>${esc(content)}</pre></div>`;
   }
 
@@ -231,7 +231,7 @@
       UNITS = buildUnits(t);
       body.innerHTML = ""; rendered = 0; cursor = 0;
       scrub.max = UNITS.length; controls.style.display = "flex";
-      setCursor(0, false);
+      setCursor(UNITS.length, false);   // reveal full trajectory by default
     }).catch(e => { statusEl.textContent = "Failed to load: " + e + ". Are you running a local server?"; });
   }
 

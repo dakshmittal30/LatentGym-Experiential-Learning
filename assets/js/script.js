@@ -30,24 +30,30 @@
 }`;
   const citeBox = document.getElementById("cite-box");
   if (citeBox) citeBox.textContent = BIBTEX;
-  const citeHome = document.getElementById("cite-home");
-  if (citeHome) citeHome.textContent = BIBTEX;
-  const copyBtn = document.getElementById("copy-bib");
-  if (copyBtn) {
-    copyBtn.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText(BIBTEX); }
-      catch { /* fallback */
-        const ta = document.createElement("textarea");
-        ta.value = BIBTEX; document.body.appendChild(ta); ta.select();
-        try { document.execCommand("copy"); } catch {}
-        document.body.removeChild(ta);
-      }
-      copyBtn.classList.add("copied");
-      const lbl = document.getElementById("copy-bib-label");
-      const prev = lbl.textContent; lbl.textContent = "Copied";
-      setTimeout(() => { copyBtn.classList.remove("copied"); lbl.textContent = prev; }, 1400);
+
+  async function copyBibtex() {
+    try { await navigator.clipboard.writeText(BIBTEX); }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = BIBTEX; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch {}
+      document.body.removeChild(ta);
+    }
+  }
+  function wireCopyBib(btnId, labelId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      await copyBibtex();
+      btn.classList.add("copied");
+      const lbl = labelId && document.getElementById(labelId);
+      const prev = lbl && lbl.textContent;
+      if (lbl) lbl.textContent = "Copied";
+      setTimeout(() => { btn.classList.remove("copied"); if (lbl) lbl.textContent = prev; }, 1400);
     });
   }
+  wireCopyBib("copy-bib", "copy-bib-label");        // legacy bottom card, if present
+  wireCopyBib("cite-link-hero", "cite-link-hero-label");
 
   // --------------------------------------------------------------- THEME
   const themeBtn = document.getElementById("theme-toggle");
@@ -59,12 +65,12 @@
   });
 
   // --------------------------------------------------------------- PANELS
-  const sideList = document.getElementById("side-list");
+  const topNav = document.getElementById("top-nav");
   const panels   = $$(".panel");
 
   function showPanel(id, anchorId) {
     panels.forEach(p => p.classList.toggle("active", p.id === id));
-    $$("#side-list li").forEach(li => li.classList.toggle("active", li.dataset.target === id));
+    $$("#top-nav .top-nav-item").forEach(el => el.classList.toggle("active", el.dataset.target === id));
     requestAnimationFrame(() => {
       if (anchorId) {
         const el = document.getElementById(anchorId);
@@ -76,10 +82,39 @@
     if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   }
 
-  sideList && sideList.addEventListener("click", e => {
-    const li = e.target.closest("li[data-target]");
-    if (li) showPanel(li.dataset.target);
+  topNav && topNav.addEventListener("click", e => {
+    const item = e.target.closest("[data-target]");
+    if (item) { showPanel(item.dataset.target, item.dataset.anchor); setDrawer(false); }
   });
+
+  // Mobile: hidden left drawer toggled by the hamburger.
+  const navToggle = document.getElementById("nav-toggle");
+  const navBackdrop = document.getElementById("nav-backdrop");
+  function setDrawer(open) {
+    if (!topNav) return;
+    topNav.classList.toggle("open", open);
+    if (navBackdrop) navBackdrop.classList.toggle("show", open);
+    if (navToggle) navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  navToggle && navToggle.addEventListener("click", () => setDrawer(!topNav.classList.contains("open")));
+  navBackdrop && navBackdrop.addEventListener("click", () => setDrawer(false));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") setDrawer(false); });
+
+  // Scale the figure so its whole containing box fits the viewport height (dynamic; never upscales).
+  const figFit = document.getElementById("fig1-anim");
+  const figCard = figFit && figFit.closest(".setup-card");
+  if (figFit && figCard) {
+    const fitFig = () => {
+      figFit.style.zoom = "1";
+      const figH = figFit.offsetHeight;
+      const extra = figCard.offsetHeight - figH;       // box chrome that does not scale (thesis, padding)
+      const target = (window.innerHeight - 80) - extra; // height left for the figure inside the box
+      figFit.style.zoom = (figH > target && target > 0) ? (target / figH).toFixed(3) : "1";
+    };
+    window.addEventListener("resize", fitFig);
+    window.addEventListener("load", fitFig);
+    requestAnimationFrame(fitFig);
+  }
 
   // data-jump: cards, buttons, callout actions. Optional data-anchor + data-prefill (for explorer).
   $$("[data-jump]").forEach(el => {
