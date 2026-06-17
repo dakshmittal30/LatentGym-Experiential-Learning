@@ -641,17 +641,14 @@
   const envList = document.getElementById("env-list");
   if (envList) {
     envList.innerHTML = ENVS.map(e => `
-      <div class="card env-card" id="env-${e.id}">
-        <div class="card-head" style="display:flex;align-items:center;gap:12px">
+      <div class="env-card2" id="env-${e.id}">
+        <a class="env-card2-head" data-jump="explorer" data-prefill="mode=frontier&env=${e.id}" title="Watch ${e.name} trajectories">
           <span class="env-ico">${e.icon}</span>
-          <div style="flex:1"><h3 style="margin:0">${e.name}</h3>
-            <p class="card-sub" style="margin:2px 0 0">${e.core}</p></div>
-        </div>
-        <div class="env-watch-row">
-          <a class="hero-btn" data-jump="explorer" data-prefill="mode=frontier&env=${e.id}">&#9654; Watch ${e.name} trajectories</a>
-          <div class="latent-tags">
-            ${e.latents.map(l => `<a data-jump="explorer" data-prefill="mode=frontier&env=${e.id}&latent=${l}">${l}</a>`).join("")}
-          </div>
+          <div class="env-card2-name">${e.name}</div>
+        </a>
+        <p class="env-card2-desc">${e.core}</p>
+        <div class="latent-tags">
+          ${e.latents.slice(0, 3).map(l => `<a data-jump="explorer" data-prefill="mode=frontier&env=${e.id}&latent=${l}">${l}</a>`).join("")}
         </div>
       </div>`).join("");
 

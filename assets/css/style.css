@@ -1630,6 +1630,16 @@ ul.clean li::before { content: "\25B8"; position: absolute; left: 4px; top: 0; c
   gap: 12px; margin-top: 10px;
 }
 
+/* seven-environments: cards (icon + name + description + up to 3 latent chips), wraps to ~2 rows */
+.env-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 18px; }
+.env-card2 { display: flex; flex-direction: column; gap: 7px; }
+.env-card2-head { display: flex; align-items: center; gap: 10px; cursor: pointer; color: inherit; }
+.env-card2-head:hover { text-decoration: none; }
+.env-card2-head .env-ico { width: 36px; height: 36px; font-size: 18px; border-radius: 10px; }
+.env-card2-name { font-weight: 700; font-size: 14px; }
+.env-card2-head:hover .env-card2-name { color: var(--accent); }
+.env-card2-desc { margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; }
+
 /* ============== Cross-Task RL: results tables + bar-chart toggle ============== */
 /* Plain table variant: all cell text in --ink, no green/red colouring; bold for best */
 table.data.plain { font-size: 13px; }
