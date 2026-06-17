@@ -474,6 +474,7 @@ register_env(
 )
 
 from . import latents, prompts, feedbacks   # each registers itself on import</div>
+              <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/envs/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
             </div>
           </div>
 
@@ -558,21 +559,6 @@ from . import latents, prompts, feedbacks   # each registers itself on import</d
         </table></div>
       </div>
     
-      <div class="card section-card">
-        <div class="card-head"><h3>Compose &amp; run</h3>
-          <p class="card-sub">Pick one option per axis; the registry resolves them into a single runnable environment.</p></div>
-        <div class="transcript">from latentgym.core import FullyDefinedEnv, make_env
-
-spec = FullyDefinedEnv(
-    env_name="number_guessing",   # core dynamics
-    latent_id="set_of_3",         # the shared hidden structure
-    prompt_id="no_info",          # how much of the latent is revealed
-    feedback_id="standard",       # binary success / failure
-    num_episodes=10,              # horizon N: tasks in the sequence
-)
-env = make_env(spec)</div>
-      </div>
-
       <!-- ============== Seven environments ============== -->
       <div class="card section-card" id="fw-environments">
         <div class="card-head"><h3>Seven environments</h3>
@@ -763,6 +749,7 @@ env = make_env(spec)</div>
     --prompt no_info --feedback standard \
     --num-episodes 10 --n-trajectories 50 \
     --output latentgym/results/ng_gpt4o/</div>
+        <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/eval/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
       </div>
       <h2 id="fw-training" class="fw-subhead">Training</h2>
       <div class="card section-card">
@@ -778,6 +765,7 @@ python -m latentgym.cli.generate_data train \
 # 2. Cross-Task RL with GRPO (SkyRL under the hood)
 bash latentgym/training/train_minimal.sh      # single GPU
 bash latentgym/training/train_fsdp.sh         # multi-GPU / FSDP</div>
+        <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/training/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
         <p class="muted small" style="margin-top:10px">See what training this recipe achieves in the <a data-jump="blog" style="cursor:pointer;color:var(--accent)">Blog</a>.</p>
       </div>
     </section>
