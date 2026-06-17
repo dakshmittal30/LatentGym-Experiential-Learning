@@ -955,7 +955,7 @@ binary search&hellip; [5365]   &hellip;12 more turns</pre>
     
 
       <div class="panel-header"><div>
-        <div class="kicker">RL recipe</div>
+        <div class="kicker">Finding 2</div>
         <h1 id="blog-rl">Cross-Task RL</h1>
         <p class="lead" style="max-width:none">Can RL fine-tuning instill general cross-task experiential learning? We compare two recipes on Qwen3-8B: <b>single-task RL</b>, whose reward depends on a single task <code>r</code>; and <b>cross-task RL</b>, whose reward depends on the full sequence <code>r<sub>1</sub>, &hellip;, r<sub>N</sub></code> (we use <code>R = &Sigma;<sub>i</sub> r<sub>i</sub></code>), training the policy to use early tasks to infer the latent and act better on later ones.</p>
       </div></div>
@@ -1039,7 +1039,7 @@ binary search&hellip; [5365]   &hellip;12 more turns</pre>
     
 
       <div class="panel-header"><div>
-        <div class="kicker">Training design</div>
+        <div class="kicker">Finding 3</div>
         <h1 id="blog-design">How training conditions shape generalization</h1>
         <p class="lead" style="max-width:none">To show the kind of question LatentGym makes answerable, we ask how the <em>in-context feedback</em> and <em>prompt</em> used at training time affect generalization. We train Qwen3-8B under all combinations of {full-info, some-info} training prompt &times; {standard, information} training feedback, holding the cumulative-reward objective fixed, and evaluate each across all four prompt &times; feedback eval combinations.</p>
       </div></div>
