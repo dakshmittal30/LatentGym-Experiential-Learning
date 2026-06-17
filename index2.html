@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LatentGym: A Testbed for Cross-Task Experiential Learning</title>
 <meta name="description" content="LatentGym: a testbed with controllable latent structure for studying cross-task experiential learning in LLM agents. Environments, findings, and an interactive trajectory explorer.">
-<link rel="stylesheet" href="assets/css/style.css?v=223">
+<link rel="stylesheet" href="assets/css/style.css?v=226">
 </head>
 <body class="nav-sidebar">
 
@@ -24,7 +24,7 @@
     <div class="nav-group">
       <button class="top-nav-item" type="button" data-target="framework">Framework</button>
       <div class="nav-dropdown">
-        <button class="nav-sub" type="button" data-target="framework" data-anchor="fw-composability">Composability &amp; Extensibility</button>
+        <button class="nav-sub" type="button" data-target="framework" data-anchor="fw-composability">Environment Design</button>
         <button class="nav-sub" type="button" data-target="framework" data-anchor="fw-evaluation">Evaluation</button>
         <button class="nav-sub" type="button" data-target="framework" data-anchor="fw-training">Training</button>
       </div>
@@ -283,7 +283,7 @@
         </div>
         <div class="grid three">
         <a class="exp-card" data-jump="framework" data-anchor="fw-composability">
-          <h4>Composability &amp; Extensibility</h4>
+          <h4>Environment Design</h4>
           <div class="graphic-box">
             <div class="comp-wrap">
               <div class="comp-modules">
@@ -399,7 +399,7 @@
         <p class="lead" style="max-width:none">Define environments, evaluate how agents adapt, and train them to adapt better, all from the same composable pieces.</p>
       </div></div>
 
-      <h2 id="fw-composability" class="fw-subhead">Composability &amp; Extensibility</h2>
+      <h2 id="fw-composability" class="fw-subhead">Environment Design</h2>
       <p class="lead" style="max-width:none">Every environment is the product of five swappable components. Change one axis without touching the others.</p>
       <!-- ============== Five design axes (compact 5-in-a-row + summary tile) ============== -->
       <div class="card section-card">
@@ -474,6 +474,7 @@ register_env(
 )
 
 from . import latents, prompts, feedbacks   # each registers itself on import</div>
+              <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/envs/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
             </div>
           </div>
 
@@ -558,20 +559,13 @@ from . import latents, prompts, feedbacks   # each registers itself on import</d
         </table></div>
       </div>
     
-      <div class="card section-card">
-        <div class="card-head"><h3>Compose &amp; run</h3>
-          <p class="card-sub">Pick one option per axis; the registry resolves them into a single runnable environment.</p></div>
-        <div class="transcript">from latentgym.core import FullyDefinedEnv, make_env
-
-spec = FullyDefinedEnv(
-    env_name="number_guessing",   # core dynamics
-    latent_id="set_of_3",         # the shared hidden structure
-    prompt_id="no_info",          # how much of the latent is revealed
-    feedback_id="standard",       # binary success / failure
-    num_episodes=10,              # horizon N: tasks in the sequence
-)
-env = make_env(spec)</div>
+      <!-- ============== Seven environments ============== -->
+      <div class="card section-card" id="fw-environments">
+        <div class="card-head"><h3>Seven environments</h3>
+          <p class="card-sub">Each instantiates the five axes with its own latent families. Click an environment or one of its latents to watch a recorded trajectory.</p></div>
+        <div class="env-grid2" id="env-list"></div>
       </div>
+
       <h2 id="fw-evaluation" class="fw-subhead">Evaluation</h2>
       <p class="lead" style="max-width:none">Beyond <em>whether</em> an agent improves, LatentGym measures <em>how</em>, separating exploration (gathering information about the latent) from exploitation (acting on what it gathered).</p>
       <div class="card section-card">
@@ -755,6 +749,7 @@ env = make_env(spec)</div>
     --prompt no_info --feedback standard \
     --num-episodes 10 --n-trajectories 50 \
     --output latentgym/results/ng_gpt4o/</div>
+        <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/eval/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
       </div>
       <h2 id="fw-training" class="fw-subhead">Training</h2>
       <div class="card section-card">
@@ -770,6 +765,7 @@ python -m latentgym.cli.generate_data train \
 # 2. Cross-Task RL with GRPO (SkyRL under the hood)
 bash latentgym/training/train_minimal.sh      # single GPU
 bash latentgym/training/train_fsdp.sh         # multi-GPU / FSDP</div>
+        <p class="muted small" style="margin-top:10px">Full guide on <a href="https://github.com/namkoong-lab/LatentGym/blob/main/latentgym/training/README.md" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></p>
         <p class="muted small" style="margin-top:10px">See what training this recipe achieves in the <a data-jump="blog" style="cursor:pointer;color:var(--accent)">Blog</a>.</p>
       </div>
     </section>
@@ -882,6 +878,79 @@ bash latentgym/training/train_fsdp.sh         # multi-GPU / FSDP</div>
         </div>
       </div>
 
+      <!-- Three findings at a glance: summary + jump-nav to each Finding below -->
+      <div class="card section-card">
+        <div class="card-head"><h3>Three findings at a glance</h3>
+          <p class="card-sub">The headline result from each finding below &mdash; click a card to jump to it.</p></div>
+        <div class="grid three">
+        <a class="exp-card" data-jump="blog" data-anchor="blog-failure">
+          <h4>Finding 1 &middot; Frontier models fail to adapt</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <text x="150" y="15" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#1a1a1a">No improvement across tasks</text>
+              <text x="150" y="29" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-style="italic" font-weight="600" fill="#c63b3b">Models do not learn from experience</text>
+              <line x1="34" y1="130" x2="230" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="42"  x2="34"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="130" x2="34" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="230" y1="130" x2="230" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <path d="M 38 65 L 80 67 L 135 63 L 185 66 L 226 65" fill="none" stroke="#1f6feb" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M 38 85 L 80 87 L 135 83 L 185 86 L 226 85" fill="none" stroke="#2e9e57" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M 38 102 L 80 104 L 135 100 L 185 103 L 226 102" fill="none" stroke="#d1342f" stroke-width="2.8" stroke-linecap="round"/>
+              <circle cx="226" cy="65"  r="3.6" fill="#1f6feb"/>
+              <text x="236" y="69" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Claude</text>
+              <circle cx="226" cy="85"  r="3.6" fill="#2e9e57"/>
+              <text x="236" y="89" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">GPT-4o</text>
+              <circle cx="226" cy="102" r="3.6" fill="#d1342f"/>
+              <text x="236" y="106" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Gemini</text>
+              <text x="132" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Task index</text>
+              <text x="20"  y="86"  text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 20 86)">Reward</text>
+            </svg>
+          </div>
+          <p>Claude Sonnet 4.6, GPT-4o, and Gemini 2.5 Flash exhibit three failure modes (<em>adaptation neglect</em>, <em>breakdown</em>, <em>miscalibration</em>) even under simple latents.</p>
+        </a>
+
+        <a class="exp-card" data-jump="blog" data-anchor="blog-rl">
+          <h4>Finding 2 &middot; Cross-Task RL induces adaptation</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <text x="150" y="15" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#1a1a1a">Reward rises across the sequence</text>
+              <text x="150" y="29" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-style="italic" fill="#8a2030" font-weight="600">After Cross-Task RL: +99% cumulative</text>
+              <line x1="34" y1="130" x2="250" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="42"  x2="34"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="34" y1="130" x2="34" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="250" y1="130" x2="250" y2="133" stroke="#1a1a1a" stroke-width="1.2"/>
+              <path d="M 38 110 L 90 112 L 160 108 L 220 110 L 250 109" fill="none" stroke="#8a8a85" stroke-width="2.2" stroke-dasharray="4 3" opacity="0.75" stroke-linecap="round"/>
+              <text x="256" y="113" font-family="Inter, sans-serif" font-size="11.5" fill="#8a8a85" font-weight="600">Base</text>
+              <path d="M 38 105 Q 100 96 160 64 T 250 44" fill="none" stroke="#8a2030" stroke-width="3.2" stroke-linecap="round"/>
+              <text x="256" y="48" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#8a2030">After RL</text>
+              <text x="142" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Task index</text>
+              <text x="20"  y="86"  text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 20 86)">Reward</text>
+            </svg>
+          </div>
+          <p>GRPO over full sequences improves cumulative reward by <b>+99%</b> over the base model and <b>+39%</b> over single-task RL, generalizing to held-out latents (<b>+55%</b>) and environments (<b>+14%</b>).</p>
+        </a>
+
+        <a class="exp-card" data-jump="blog" data-anchor="blog-design">
+          <h4>Finding 3 &middot; Sparser feedback transfers better</h4>
+          <div class="graphic-box">
+            <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <text x="150" y="20" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1a1a1a">Models trained on sparse feedback are robust</text>
+              <line x1="42" y1="130" x2="262" y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <line x1="42" y1="42"  x2="42"  y2="130" stroke="#1a1a1a" stroke-width="1.4"/>
+              <rect x="92"  y="50" width="60" height="80" rx="3" fill="#8a2030"/>
+              <text x="122" y="44" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#8a2030">0.86</text>
+              <text x="122" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Sparse</text>
+              <rect x="180" y="86" width="60" height="44" rx="3" fill="#c44f5d" opacity="0.78"/>
+              <text x="210" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#c44f5d">0.41</text>
+              <text x="210" y="151" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500">Full</text>
+              <text x="28"  y="86" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#8a8a85" font-weight="500" transform="rotate(-90 28 86)">Eval reward</text>
+            </svg>
+          </div>
+          <p>Counterintuitively, training under standard (binary) feedback transfers more robustly across deployment conditions than richer feedback, driven by robustness to the eval-feedback shift rather than faster learning.</p>
+        </a>
+        </div>
+      </div>
+
       <div class="panel-header"><div>
         <div class="kicker">Finding 1</div>
         <h1 id="blog-failure">Failure Modes of Frontier Models</h1>
@@ -959,7 +1028,7 @@ binary search&hellip; [5365]   &hellip;12 more turns</pre>
     
 
       <div class="panel-header"><div>
-        <div class="kicker">RL recipe</div>
+        <div class="kicker">Finding 2</div>
         <h1 id="blog-rl">Cross-Task RL</h1>
         <p class="lead" style="max-width:none">Can RL fine-tuning instill general cross-task experiential learning? We compare two recipes on Qwen3-8B: <b>single-task RL</b>, whose reward depends on a single task <code>r</code>; and <b>cross-task RL</b>, whose reward depends on the full sequence <code>r<sub>1</sub>, &hellip;, r<sub>N</sub></code> (we use <code>R = &Sigma;<sub>i</sub> r<sub>i</sub></code>), training the policy to use early tasks to infer the latent and act better on later ones.</p>
       </div></div>
@@ -1043,7 +1112,7 @@ binary search&hellip; [5365]   &hellip;12 more turns</pre>
     
 
       <div class="panel-header"><div>
-        <div class="kicker">Training design</div>
+        <div class="kicker">Finding 3</div>
         <h1 id="blog-design">How training conditions shape generalization</h1>
         <p class="lead" style="max-width:none">To show the kind of question LatentGym makes answerable, we ask how the <em>in-context feedback</em> and <em>prompt</em> used at training time affect generalization. We train Qwen3-8B under all combinations of {full-info, some-info} training prompt &times; {standard, information} training feedback, holding the cumulative-reward objective fixed, and evaluate each across all four prompt &times; feedback eval combinations.</p>
       </div></div>
@@ -1144,7 +1213,7 @@ binary search&hellip; [5365]   &hellip;12 more turns</pre>
   <img src="assets/img/oumi_ai_logo.png" alt="Oumi AI" class="topbar-affil">
 </footer>
 
-<script src="assets/js/script.js?v=209"></script>
+<script src="assets/js/script.js?v=212"></script>
 <script src="assets/js/explorer.js?v=206"></script>
 </body>
 </html>
