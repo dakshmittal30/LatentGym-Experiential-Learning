@@ -224,8 +224,8 @@ ul, ol { color: var(--ink-soft); }
 .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(138,32,48,.15); }
 
 /* author byline */
-.authors { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
-.author { font-weight: 500; }
+.authors { color: var(--ink-soft); font-size: 14px; margin-top: 8px; text-wrap: balance; }
+.author { font-weight: 500; white-space: nowrap; }
 .author-sep { color: var(--ink-mute); margin: 0 5px; }
 .topbar-affils {
   display: flex; align-items: center; gap: 16px;
