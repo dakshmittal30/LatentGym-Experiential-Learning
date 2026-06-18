@@ -106,6 +106,8 @@
   if (figFit && figCard) {
     const fitFig = () => {
       figFit.style.zoom = "1";
+      // Phones stack the figure tall and scroll the page; don't shrink it to fit viewport height.
+      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) return;
       const figH = figFit.offsetHeight;
       const extra = figCard.offsetHeight - figH;       // box chrome that does not scale (thesis, padding)
       const target = (window.innerHeight - 80) - extra; // height left for the figure inside the box

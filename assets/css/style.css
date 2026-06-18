@@ -289,6 +289,8 @@ ul, ol { color: var(--ink-soft); }
   }
   .nav-backdrop.show { opacity: 1; pointer-events: auto; }
   .content { padding: 18px 14px 40px; }
+  /* The off-canvas drawer (translateX(100%)) sits past the right edge; clip so it can't widen the page. */
+  html, body { overflow-x: hidden; }
   .site-affils { display: none; }
 }
 
@@ -399,7 +401,7 @@ ul, ol { color: var(--ink-soft); }
   display: grid; grid-template-columns: minmax(0, 1fr) 235px;
   gap: 36px; align-items: start;
 }
-@media (max-width: 900px) { .fa-body { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .fa-body { grid-template-columns: minmax(0, 1fr); } }
 
 /* ====== LEFT column (prompt at top, then horizontal task row, then learning strip) ====== */
 .fa-left {
@@ -479,7 +481,7 @@ ul, ol { color: var(--ink-soft); }
 
 /* ====== Mobile responsive: stack everything cleanly inside the figure ====== */
 @media (max-width: 760px) {
-  .fig1-anim { padding: 12px 10px 10px; overflow-x: hidden; }
+  .fig1-anim { padding: 12px 10px 10px; overflow-x: hidden; width: 100%; box-sizing: border-box; }
   /* Prompt + Setting: stack vertically, both full width, Setting on top */
   .fa-top-row { flex-direction: column; gap: 10px; }
   .fa-top-row .fa-prompt,
