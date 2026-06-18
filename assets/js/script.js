@@ -224,7 +224,9 @@
     });
     // Autoplay on first viewport entry; honour prefers-reduced-motion
     const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
+    // Small screens: reveal the final state at once; the timed reveal leaves a big empty gap when stacked.
+    const smallScreen = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
+    if (reduced || smallScreen) {
       steps.forEach(s => s.classList.add("show"));
     } else if ("IntersectionObserver" in window) {
       // threshold 0 (and a generous bottom rootMargin) so the figure autoplays even on

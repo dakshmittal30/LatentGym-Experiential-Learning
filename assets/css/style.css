@@ -71,7 +71,7 @@ ul, ol { color: var(--ink-soft); }
 
 /* ============================== TOP BAR ============================== */
 .topbar {
-  position: sticky; top: 0; z-index: 50;
+  position: sticky; top: 0; z-index: 80;
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 24px;
   background: var(--bg-elev);
@@ -267,12 +267,12 @@ ul, ol { color: var(--ink-soft); }
     background: var(--bg-soft); border: 1px solid var(--line); color: var(--ink);
   }
   .top-nav {
-    position: fixed; top: 0; left: 0; z-index: 70;
+    position: fixed; top: 0; right: 0; left: auto; z-index: 70;
     width: 272px; max-width: 84vw; height: 100vh; height: 100dvh;
     flex-direction: column; align-items: stretch; gap: 2px;
-    background: var(--bg-elev); border-right: 1px solid var(--line); box-shadow: var(--shadow-2);
+    background: var(--bg-elev); border-left: 1px solid var(--line); box-shadow: var(--shadow-2);
     padding: 68px 12px 24px; overflow-y: auto;
-    transform: translateX(-100%); transition: transform .25s ease;
+    transform: translateX(100%); transition: transform .25s ease;
   }
   .top-nav.open { transform: none; }
   .nav-group { display: block; }
