@@ -11,8 +11,8 @@
 
   // --------------------------------------------------------------- LINKS
   const LINKS = {
-    paper: "#",                                              // arXiv / PDF : fill in
-    code:  "https://github.com/dakshmittal30/Adaptation-website",
+    paper: "https://arxiv.org/abs/2606.15306",               // arXiv abstract
+    code:  "https://github.com/namkoong-lab/LatentGym",
     blog:  "#",
   };
   ["paper-link", "paper-link-2", "paper-link-3", "paper-link-4", "paper-link-hero"].forEach(id => {
@@ -21,12 +21,14 @@
   const codeLink = document.getElementById("code-link"); if (codeLink) codeLink.href = LINKS.code;
 
   // --------------------------------------------------------------- BIBTEX
-  const BIBTEX = `@inproceedings{mittal2026latentgym,
-  title     = {LatentGym: A Testbed for Cross-Task Experiential Learning with Controllable Latent Structure},
-  author    = {Mittal, Daksh and Castellani, Tommaso and Yen, Thomson and Ye, Naimeng
-               and Wu, Fangyu and Chen, Minghui and Cai, Tiffany and Koukoumidis, Emmanouil
-               and Zeng, William and Namkoong, Hongseok},
-  year      = {2026},
+  const BIBTEX = `@misc{mittal2026latentgymtestbedcrosstaskexperiential,
+      title={LatentGym: A Testbed For Cross-Task Experiential Learning With Controllable Latent Structure},
+      author={Daksh Mittal and Tommaso Castellani and Thomson Yen and Naimeng Ye and Fangyu Wu and Minghui Chen and Tiffany Cai and Emmanouil Koukoumidis and William Zeng and Hongseok Namkoong},
+      year={2026},
+      eprint={2606.15306},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2606.15306},
 }`;
   const citeBox = document.getElementById("cite-box");
   if (citeBox) citeBox.textContent = BIBTEX;
